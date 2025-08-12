@@ -1,0 +1,135 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Clock-Out Time Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #headerImage {
+            max-width: 250px;
+            height: auto;
+            margin-bottom: 10px;
+            display: block;
+            cursor: pointer;
+            border: 2px dashed #ccc;
+            padding: 5px;
+        }
+        input[type="file"] {
+            display: none;
+        }
+        .calculator {
+            background-color: #fff;
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 300px;
+        }
+        input, button {
+            padding: 10px;
+            margin: 8px 0;
+            font-size: 16px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        button {
+            cursor: pointer;
+        }
+        #resetImage {
+            font-size: 12px;
+            padding: 4px 8px;
+            width: auto;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        #result {
+            margin-top: 15px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <label for="imageUpload">
+        <img id="headerImage" src="" alt="Click to choose header image">
+    </label>
+    <input type="file" id="imageUpload" accept="image/*">
+    <button id="resetImage">Reset Image</button>
+
+    <div class="calculator">
+        <h2>Clock-Out Time Calculator</h2>
+        <label for="clockIn">Clock-In Time (HH:MM, 24-hour):</label>
+        <input type="time" id="clockIn">
+        
+        <label for="lunch">Lunch Duration (minutes):</label>
+        <input type="number" id="lunch" value="30">
+        
+        <button onclick="calculateClockOut()">Calculate</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const imageUpload = document.getElementById("imageUpload");
+        const headerImage = document.getElementById("headerImage");
+        const resetImage = document.getElementById("resetImage");
+
+        // Load image from localStorage if available
+        const savedImage = localStorage.getItem("headerImage");
+        if (savedImage) {
+            headerImage.src = savedImage;
+        }
+
+        imageUpload.addEventListener("change", function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    headerImage.src = e.target.result;
+                    localStorage.setItem("headerImage", e.target.result);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        resetImage.addEventListener("click", function() {
+            headerImage.src = "";
+            localStorage.removeItem("headerImage");
+        });
+
+        function calculateClockOut() {
+            const clockIn = document.getElementById('clockIn').value;
+            const lunch = parseInt(document.getElementById('lunch').value) || 0;
+
+            if (!clockIn) {
+                document.getElementById('result').innerText = "Please enter a valid clock-in time.";
+                return;
+            }
+
+            const [hours, minutes] = clockIn.split(':').map(Number);
+            const startDate = new Date();
+            startDate.setHours(hours, minutes);
+
+            const totalMinutes = 8 * 60 + lunch;
+            const endDate = new Date(startDate.getTime() + totalMinutes * 60000);
+
+            let endHours = endDate.getHours();
+            const ampm = endHours >= 12 ? 'PM' : 'AM';
+            endHours = endHours % 12 || 12;
+            const endMinutes = endDate.getMinutes().toString().padStart(2, '0');
+
+            document.getElementById('result').innerText = `You should clock out at ${endHours}:${endMinutes} ${ampm}`;
+        }
+    </script>
+</body>
+</html>
