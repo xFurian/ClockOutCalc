@@ -11,20 +11,20 @@
             font-family: Arial, sans-serif;
             text-align: center;
             margin: 0;
-            padding: 20px;
+            padding: 10px; /* Reduced padding to bring rows closer */
         }
         h1 {
-            margin-bottom: 20px;
+            margin-bottom: 10px; /* Reduced margin to bring rows closer */
         }
         #top-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 10px; /* Reduced margin to bring rows closer */
         }
         #draw-pile {
             display: flex;
-            gap: 10px;
+            gap: 5px; /* Reduced gap to bring draw and discard closer */
         }
         #draw {
             width: 70px;
@@ -37,7 +37,7 @@
         }
         #foundations {
             display: flex;
-            gap: 10px;
+            gap: 5px; /* Reduced gap to bring foundations closer */
         }
         .foundation {
             width: 70px;
@@ -55,6 +55,7 @@
         #tableau {
             display: flex;
             justify-content: space-around;
+            margin-top: 5px; /* Reduced margin to bring tableau closer */
         }
         .column {
             width: 70px;
@@ -65,22 +66,26 @@
         }
         .card {
             width: 70px;
-            height: 100px;
             border: 1px solid black;
             background: white;
             color: black;
-            line-height: 100px;
             text-align: center;
             cursor: grab;
             user-select: none;
             position: relative;
             margin-top: -20px; /* Adjusted to show card path */
         }
+        .card.face-up {
+            height: 60px; /* Shorter height for face-up cards */
+            line-height: 60px; /* Adjust line height to match height */
+        }
         .card.red {
             color: red;
         }
         .card.face-down {
-            background: blue;
+            height: 100px; /* Original height for face-down cards */
+            line-height: 100px;
+            background: black; /* Changed from blue to black */
             color: white;
         }
         .card:first-child {
@@ -91,7 +96,7 @@
             color: white;
             border: none;
             padding: 10px 20px;
-            margin-top: 20px;
+            margin-top: 10px; /* Reduced margin to bring button closer */
             cursor: pointer;
             border-radius: 5px;
         }
@@ -224,6 +229,7 @@
             const div = document.createElement('div');
             div.classList.add('card');
             if (card.faceUp) {
+                div.classList.add('face-up');
                 if (card.color === 'red') div.classList.add('red');
                 div.innerHTML = `${getRankSymbol(card.rank)}${symbols[card.suit]}`;
                 div.dataset.suit = card.suit;
