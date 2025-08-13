@@ -6,25 +6,22 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            background-color: white;
             margin: 0;
-            padding: 40px 20px;
+            padding: 0;
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
+            height: 100vh;
         }
 
         .calculator {
-            background-color: #fff;
-            padding: 25px 35px;
-            border-radius: 12px;
-            border: 1px solid #ccc;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            text-align: center;
-            width: 320px;
+            width: 300px;
+            text-align: left;
         }
 
         h2 {
+            text-align: center;
             margin-bottom: 20px;
         }
 
@@ -32,26 +29,25 @@
             display: block;
             margin-top: 15px;
             font-weight: bold;
-            text-align: left;
         }
 
         input {
+            width: 100%;
             padding: 10px;
             margin-top: 5px;
             font-size: 16px;
-            width: 100%;
             box-sizing: border-box;
         }
 
         button {
-            margin-top: 20px;
-            padding: 10px;
-            font-size: 16px;
             width: 100%;
+            padding: 10px;
+            margin-top: 20px;
+            font-size: 16px;
             background-color: #007BFF;
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 4px;
             cursor: pointer;
         }
 
@@ -62,7 +58,7 @@
         #result {
             margin-top: 20px;
             font-weight: bold;
-            color: #333;
+            text-align: center;
         }
     </style>
 </head>
@@ -73,7 +69,7 @@
         <label for="clockIn">Clock-In Time (HH:MM, 24-hour):</label>
         <input type="time" id="clockIn">
 
-        <label for="lunch">Lunch Duration (minutes):</label>
+        <label for="lunch">Lunch Duration (minutes)</label>
         <input type="number" id="lunch" value="30">
 
         <button onclick="calculateClockOut()">Calculate</button>
