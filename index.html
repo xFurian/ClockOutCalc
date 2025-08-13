@@ -17,10 +17,10 @@
 
         .calculator {
             width: 320px;
-            padding: 30px;
-            background-color: #ffffff;
+            padding: 25px;
+            background-color: #f2f2f2; /* Light grey box */
+            border-radius: 12px; /* Soft edges */
             border: 1px solid #ccc;
-            border-radius: 12px;
             display: flex;
             flex-direction: column;
         }
@@ -39,13 +39,13 @@
         input[type="number"] {
             padding: 10px;
             font-size: 16px;
-            border: 1px solid #000; /* Thin black border */
+            border: 1px solid #000; /* Black border */
             margin-top: 5px;
             border-radius: 6px;
             background-color: #fff;
         }
 
-        input[type="time"]::placeholder {
+        input::placeholder {
             color: #aaa;
         }
 
@@ -53,15 +53,15 @@
             margin-top: 20px;
             padding: 10px;
             font-size: 16px;
-            background-color: #007BFF; /* Bright blue */
+            background-color: #444; /* Neutral grey/black */
             color: white;
             border: none;
-            border-radius: 6px; /* Rounded corners */
+            border-radius: 6px;
             cursor: pointer;
         }
 
         button:hover {
-            background-color: #0056b3;
+            background-color: #666;
         }
 
         #result {
@@ -76,9 +76,9 @@
         <h2>Clock-Out Time Calculator</h2>
 
         <label for="clockIn">Clock-In Time (HH:MM, 24-hour):</label>
-        <input type="time" id="clockIn" placeholder="--:--">
+        <input type="time" id="clockIn" placeholder="--:-- --">
 
-        <label for="lunch">Lunch Duration (minutes)</label>
+        <label for="lunch">Lunch Duration (minutes):</label>
         <input type="number" id="lunch" value="30">
 
         <button onclick="calculateClockOut()">Calculate</button>
