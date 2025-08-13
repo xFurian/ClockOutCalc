@@ -1,67 +1,378 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Solitaire Game</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solitaire</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #2e7d32;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            height: 100vh;
+            background: green;
             color: white;
-        }
-
-        .game-container {
-            background-color: #388e3c;
-            border-radius: 12px;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
             padding: 20px;
-            margin-top: 40px;
-            width: 90%;
-            max-width: 800px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        #top-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        #draw {
+            width: 70px;
+            height: 100px;
+            border: 1px solid white;
+            background: darkgreen;
+            line-height: 100px;
+            cursor: pointer;
             text-align: center;
         }
-
-        .placeholder {
-            background-color: #1b5e20;
-            border: 2px dashed #c8e6c9;
-            border-radius: 8px;
-            height: 400px;
-            margin-top: 20px;
+        #foundations {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            color: #c8e6c9;
+            gap: 10px;
         }
-
-        .back-button {
-            margin-top: 30px;
-            padding: 10px 20px;
-            font-size: 16px;
-            background-color: #ffffff;
-            color: #2e7d32;
+        .foundation {
+            width: 70px;
+            height: 100px;
+            border: 1px dashed white;
+            line-height: 100px;
+            text-align: center;
+        }
+        #discard {
+            width: 70px;
+            height: 100px;
+            border: 1px solid white;
+            background: darkgreen;
+        }
+        #tableau {
+            display: flex;
+            justify-content: space-around;
+        }
+        .column {
+            width: 70px;
+            min-height: 100px;
+            border: 1px dashed white;
+            text-align: center;
+            line-height: 100px;
+        }
+        .card {
+            width: 70px;
+            height: 100px;
+            border: 1px solid black;
+            background: white;
+            color: black;
+            line-height: 100px;
+            text-align: center;
+            cursor: grab;
+            user-select: none;
+            position: relative;
+        }
+        .card.red {
+            color: red;
+        }
+        .card.face-down {
+            background: blue;
+            color: white;
+        }
+        .card:not(:first-child) {
+            margin-top: -80px;
+        }
+        #back-button {
+            background: gray;
+            color: white;
             border: none;
-            border-radius: 6px;
+            padding: 10px 20px;
+            margin-top: 20px;
             cursor: pointer;
-        }
-
-        .back-button:hover {
-            background-color: #c8e6c9;
+            border-radius: 5px;
         }
     </style>
 </head>
 <body>
-    <div class="game-container">
-        <h1>Solitaire Game</h1>
-        <div class="placeholder">Game Area Placeholder</div>
-        <button class="back-button" onclick="window.location.href='index.html'">Back to Clock-Out Calculator</button>
+    <h1>Solitaire</h1>
+    <div id="top-row">
+        <div id="draw" onclick="drawCard()"></div>
+        <div id="foundations">
+            <div class="foundation" data-suit="hearts"></div>
+            <div class="foundation" data-suit="diamonds"></div>
+            <div class="foundation" data-suit="clubs"></div>
+            <div class="foundation" data-suit="spades"></div>
+        </div>
+        <div id="discard"></div>
     </div>
+    <div id="tableau">
+        <div class="column" data-col="0"></div>
+        <div class="column" data-col="1"></div>
+        <div class="column" data-col="2"></div>
+        <div class="column" data-col="3"></div>
+        <div class="column" data-col="4"></div>
+        <div class="column" data-col="5"></div>
+        <div class="column" data-col="6"></div>
+    </div>
+    <button id="back-button">Back to Clock-Out Calculator</button>
+
+    <script>
+        const suits = ['hearts', 'diamonds', 'clubs', 'spades'];
+        const symbols = { hearts: '♥', diamonds: '♦', clubs: '♣', spades: '♠' };
+        const colors = { hearts: 'red', diamonds: 'red', clubs: 'black', spades: 'black' };
+        const ranks = Array.from({ length: 13 }, (_, i) => i + 1);
+        const rankSymbols = { 1: 'A', 11: 'J', 12: 'Q', 13: 'K' };
+
+        function getRankSymbol(rank) {
+            return rankSymbols[rank] || rank;
+        }
+
+        let stock = [];
+        let waste = [];
+        let foundations = { hearts: [], diamonds: [], clubs: [], spades: [] };
+        let tableau = Array(7).fill().map(() => []);
+
+        function initGame() {
+            stock = [];
+            suits.forEach(suit => {
+                ranks.forEach(rank => {
+                    stock.push({ suit, rank, color: colors[suit], faceUp: false });
+                });
+            });
+            shuffle(stock);
+
+            // Deal to tableau
+            for (let i = 0; i < 7; i++) {
+                for (let j = i; j < 7; j++) {
+                    const card = stock.pop();
+                    card.faceUp = (i === j);
+                    tableau[j].push(card);
+                }
+            }
+
+            waste = [];
+            render();
+        }
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function render() {
+            const drawDiv = document.getElementById('draw');
+            drawDiv.innerHTML = stock.length > 0 ? 'Draw' : 'Reset';
+
+            const discardDiv = document.getElementById('discard');
+            discardDiv.innerHTML = '';
+            if (waste.length > 0) {
+                const cardDiv = createCardDiv(waste[waste.length - 1]);
+                discardDiv.appendChild(cardDiv);
+            }
+
+            suits.forEach(suit => {
+                const f = document.querySelector(`.foundation[data-suit="${suit}"]`);
+                f.innerHTML = '';
+                const foundationPile = foundations[suit];
+                if (foundationPile.length > 0) {
+                    const cardDiv = createCardDiv(foundationPile[foundationPile.length - 1]);
+                    f.appendChild(cardDiv);
+                } else {
+                    f.innerHTML = symbols[suit];
+                    f.style.color = colors[suit] === 'red' ? 'red' : 'white';
+                }
+            });
+
+            for (let i = 0; i < 7; i++) {
+                const col = document.querySelector(`.column[data-col="${i}"]`);
+                col.innerHTML = '';
+                const pile = tableau[i];
+                if (pile.length === 0) {
+                    col.innerHTML = i + 1;
+                } else {
+                    pile.forEach((card, index) => {
+                        const cardDiv = createCardDiv(card);
+                        if (index > 0) cardDiv.style.marginTop = '-80px';
+                        col.appendChild(cardDiv);
+                    });
+                }
+            }
+
+            // Add event listeners
+            document.querySelectorAll('.card').forEach(cardDiv => {
+                cardDiv.draggable = true;
+                cardDiv.addEventListener('dragstart', dragStart);
+            });
+
+            document.querySelectorAll('.column, .foundation').forEach(target => {
+                target.addEventListener('dragover', dragOver);
+                target.addEventListener('drop', drop);
+            });
+
+            // Discard is drop target? No, but for completeness, not adding drop to discard
+            checkWin();
+        }
+
+        function createCardDiv(card) {
+            const div = document.createElement('div');
+            div.classList.add('card');
+            if (card.faceUp) {
+                if (card.color === 'red') div.classList.add('red');
+                div.innerHTML = `${getRankSymbol(card.rank)}${symbols[card.suit]}`;
+                div.dataset.suit = card.suit;
+                div.dataset.rank = card.rank;
+                div.dataset.color = card.color;
+            } else {
+                div.classList.add('face-down');
+                div.innerHTML = 'BACK';
+            }
+            return div;
+        }
+
+        function drawCard() {
+            if (stock.length > 0) {
+                const card = stock.pop();
+                card.faceUp = true;
+                waste.push(card);
+            } else if (waste.length > 0) {
+                stock = waste.reverse();
+                stock.forEach(c => c.faceUp = false);
+                waste = [];
+            }
+            render();
+        }
+
+        function dragStart(e) {
+            const cardDiv = e.target;
+            if (cardDiv.classList.contains('face-down')) {
+                e.preventDefault();
+                return;
+            }
+
+            let pileType, pileIndex, cardIndex;
+            const parent = cardDiv.parentNode;
+
+            if (parent.id === 'discard') {
+                pileType = 'waste';
+                cardIndex = waste.length - 1;
+            } else if (parent.classList.contains('foundation')) {
+                pileType = 'foundation';
+                pileIndex = parent.dataset.suit;
+                cardIndex = foundations[pileIndex].length - 1;
+            } else if (parent.classList.contains('column')) {
+                pileType = 'tableau';
+                pileIndex = parseInt(parent.dataset.col);
+                const children = Array.from(parent.children);
+                cardIndex = children.indexOf(cardDiv);
+                if (!canMoveSubstack(tableau[pileIndex], cardIndex)) {
+                    e.preventDefault();
+                    return;
+                }
+            }
+
+            e.dataTransfer.setData('pileType', pileType);
+            e.dataTransfer.setData('pileIndex', pileIndex);
+            e.dataTransfer.setData('cardIndex', cardIndex);
+            setTimeout(() => { cardDiv.style.opacity = '0.5'; }, 0);
+        }
+
+        function canMoveSubstack(pile, startIndex) {
+            for (let k = startIndex; k < pile.length - 1; k++) {
+                const current = pile[k];
+                const next = pile[k + 1];
+                if (!next.faceUp || next.rank !== current.rank - 1 || next.color === current.color) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function dragOver(e) {
+            e.preventDefault();
+        }
+
+        function drop(e) {
+            e.preventDefault();
+            let target = e.target;
+            if (target.classList.contains('card')) {
+                target = target.parentNode;
+            }
+
+            let targetType, targetIndex;
+            if (target.classList.contains('foundation')) {
+                targetType = 'foundation';
+                targetIndex = target.dataset.suit;
+            } else if (target.classList.contains('column')) {
+                targetType = 'tableau';
+                targetIndex = parseInt(target.dataset.col);
+            } else {
+                return;
+            }
+
+            const pileType = e.dataTransfer.getData('pileType');
+            const pileIndex = e.dataTransfer.getData('pileIndex');
+            const cardIndex = parseInt(e.dataTransfer.getData('cardIndex'));
+
+            let sourcePile;
+            if (pileType === 'waste') {
+                sourcePile = waste;
+            } else if (pileType === 'foundation') {
+                sourcePile = foundations[pileIndex];
+            } else if (pileType === 'tableau') {
+                sourcePile = tableau[pileIndex];
+            }
+
+            const substack = sourcePile.splice(cardIndex, sourcePile.length - cardIndex);
+
+            let valid = false;
+            const movingCard = substack[0];
+
+            let targetPile;
+            if (targetType === 'foundation') {
+                targetPile = foundations[targetIndex];
+                if (substack.length > 1 || movingCard.suit !== targetIndex) {
+                    // invalid
+                } else if (targetPile.length === 0) {
+                    valid = movingCard.rank === 1;
+                } else {
+                    const top = targetPile[targetPile.length - 1];
+                    valid = movingCard.rank === top.rank + 1;
+                }
+            } else if (targetType === 'tableau') {
+                targetPile = tableau[targetIndex];
+                if (targetPile.length === 0) {
+                    valid = movingCard.rank === 13;
+                } else {
+                    const top = targetPile[targetPile.length - 1];
+                    valid = movingCard.rank === top.rank - 1 && movingCard.color !== top.color;
+                }
+            }
+
+            if (valid) {
+                targetPile.push(...substack);
+                if (pileType === 'tableau' && sourcePile.length > 0 && !sourcePile[sourcePile.length - 1].faceUp) {
+                    sourcePile[sourcePile.length - 1].faceUp = true;
+                }
+            } else {
+                sourcePile.push(...substack);
+            }
+
+            document.querySelectorAll('.card').forEach(cardDiv => {
+                cardDiv.style.opacity = '1';
+            });
+
+            render();
+        }
+
+        function checkWin() {
+            const won = suits.every(suit => foundations[suit].length === 13);
+            if (won) {
+                alert('Congratulations! You won!');
+            }
+        }
+
+        initGame();
+    </script>
 </body>
 </html>
