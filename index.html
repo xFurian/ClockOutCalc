@@ -58,6 +58,14 @@
             background-color: #555; /* Lighter grey on hover */
         }
 
+        /* Play button style - 1/4 width of normal button */
+        #playButton {
+            width: 25%;
+            font-size: 14px;
+            padding: 6px;
+            margin-top: 5px;
+        }
+
         #resetImage {
             font-size: 12px;
             padding: 4px 8px;
@@ -91,6 +99,12 @@
         <input type="number" id="lunch" value="30">
 
         <button onclick="calculateClockOut()">Calculate</button>
+
+        <!-- New Play Button -->
+        <button id="playButton" onclick="window.location.href='https://github.com/xFurian/ClockOutCalc/blob/main/solitaire.html'">
+            Play
+        </button>
+
         <div id="result"></div>
     </div>
 
