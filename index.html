@@ -6,75 +6,84 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: white;
+            background-color: #f4f4f4;
             margin: 0;
-            padding: 0;
+            padding: 40px 20px;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            height: 100vh;
+        }
+
+        #headerImage {
+            max-width: 250px;
+            height: auto;
+            margin-bottom: 10px;
+            display: block;
+            cursor: pointer;
+            border: 2px dashed #ccc;
+            padding: 5px;
+        }
+
+        input[type="file"] {
+            display: none;
         }
 
         .calculator {
-            width: 320px;
-            padding: 25px;
-            background-color: #f2f2f2; /* Light grey box */
-            border-radius: 12px; /* Soft edges */
-            border: 1px solid #ccc;
-            display: flex;
-            flex-direction: column;
-        }
-
-        h2 {
+            background-color: #f2f2f2; /* Light grey background */
+            padding: 30px;
+            border-radius: 15px; /* Soft edges */
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1); /* Subtle shadow */
             text-align: center;
-            margin-bottom: 20px;
+            width: 320px;
         }
 
-        label {
-            margin-top: 15px;
-            font-weight: bold;
-        }
-
-        input[type="time"],
-        input[type="number"] {
+        input, button {
             padding: 10px;
+            margin: 8px 0;
             font-size: 16px;
-            border: 1px solid #000; /* Black border */
-            margin-top: 5px;
+            width: 100%;
+            box-sizing: border-box;
             border-radius: 6px;
-            background-color: #fff;
-        }
-
-        input::placeholder {
-            color: #aaa;
+            border: 1px solid #000; /* Black border for inputs */
         }
 
         button {
-            margin-top: 20px;
-            padding: 10px;
-            font-size: 16px;
-            background-color: #444; /* Neutral grey/black */
+            background-color: #333; /* Dark grey button */
             color: white;
             border: none;
-            border-radius: 6px;
             cursor: pointer;
         }
 
         button:hover {
-            background-color: #666;
+            background-color: #555; /* Lighter grey on hover */
+        }
+
+        #resetImage {
+            font-size: 12px;
+            padding: 4px 8px;
+            width: auto;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            margin-bottom: 10px;
         }
 
         #result {
-            margin-top: 20px;
+            margin-top: 15px;
             font-weight: bold;
-            text-align: center;
         }
     </style>
 </head>
 <body>
+    <label for="imageUpload">
+        <img id="headerImage" src="" alt="Click to choose header image">
+    </label>
+    <input type="file" id="imageUpload" accept="image/*">
+    <button id="resetImage">Reset Image</button>
+
     <div class="calculator">
         <h2>Clock-Out Time Calculator</h2>
-
         <label for="clockIn">Clock-In Time (HH:MM, 24-hour):</label>
         <input type="time" id="clockIn" placeholder="--:-- --">
 
@@ -86,6 +95,33 @@
     </div>
 
     <script>
+        const imageUpload = document.getElementById("imageUpload");
+        const headerImage = document.getElementById("headerImage");
+        const resetImage = document.getElementById("resetImage");
+
+        // Load image from localStorage if available
+        const savedImage = localStorage.getItem("headerImage");
+        if (savedImage) {
+            headerImage.src = savedImage;
+        }
+
+        imageUpload.addEventListener("change", function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    headerImage.src = e.target.result;
+                    localStorage.setItem("headerImage", e.target.result);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        resetImage.addEventListener("click", function() {
+            headerImage.src = "";
+            localStorage.removeItem("headerImage");
+        });
+
         function calculateClockOut() {
             const clockIn = document.getElementById('clockIn').value;
             const lunch = parseInt(document.getElementById('lunch').value) || 0;
