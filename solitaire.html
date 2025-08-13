@@ -95,7 +95,7 @@
 <body>
 <h1>Solitaire</h1>
 
-<!-- Top Row: Stock/Waste/Foundations + New Game Button -->
+<!-- Top Row: Stock/Waste/Foundations + New Game + Back to Calculator -->
 <div class="top-row">
     <div class="piles-group">
         <div id="stock" class="pile" onclick="drawCard()"></div>
@@ -105,7 +105,10 @@
         <div id="foundation3" class="pile foundation"></div>
         <div id="foundation4" class="pile foundation"></div>
     </div>
-    <button onclick="newGame()" style="margin-left: auto;">New Game</button>
+    <div style="margin-left: auto; display: flex; gap: 5px;">
+        <button onclick="newGame()">New Game</button>
+        <button onclick="window.location.href='http://www.protoncube.com/'">Back to Calculator</button>
+    </div>
 </div>
 
 <!-- Tableau Row -->
@@ -204,13 +207,11 @@ function createCardElement(card, pileId, index) {
         div.draggable = true;
         div.addEventListener('dragstart', e => dragStart(e, pileId, index));
     }
-    // Let cards accept drops (dropping on a card really means "drop on that pile")
     div.addEventListener('dragover', e => e.preventDefault());
     div.addEventListener('drop', e => drop(e, pileId));
     return div;
 }
 
-/* NEW: make empty piles (and piles in general) droppable */
 function attachPileDropTargets() {
     document.querySelectorAll('.pile').forEach(pileEl => {
         pileEl.addEventListener('dragover', e => {
@@ -220,7 +221,7 @@ function attachPileDropTargets() {
         pileEl.addEventListener('dragleave', () => pileEl.classList.remove('drag-over'));
         pileEl.addEventListener('drop', e => {
             pileEl.classList.remove('drag-over');
-            drop(e, pileEl.id); // let drop handler figure it out
+            drop(e, pileEl.id);
         });
     });
 }
@@ -240,10 +241,8 @@ function drop(e, targetPileId) {
     let targetPile = getPileArray(targetPileId);
     if (!sourcePile || !targetPile) return;
 
-    // Move stack from tableau; single card from waste/foundation
     let movingCards = sourcePile.slice(index);
 
-    // Only allow single card into foundations
     if (targetPileId.startsWith('foundation') && movingCards.length > 1) {
         movingCards = [movingCards[0]];
     }
@@ -252,7 +251,6 @@ function drop(e, targetPileId) {
         sourcePile.splice(index, movingCards.length);
         targetPile.push(...movingCards);
 
-        // Flip next card if tableau
         if (pileId.startsWith('tableau') && sourcePile.length > 0 && !sourcePile[sourcePile.length - 1].faceUp) {
             sourcePile[sourcePile.length - 1].faceUp = true;
         }
@@ -289,7 +287,6 @@ function drawCard() {
         card.faceUp = true;
         waste.push(card);
     } else {
-        // Recycle waste back into stock
         stock = waste.reverse().map(c => ({ ...c, faceUp: false }));
         waste = [];
     }
@@ -301,9 +298,8 @@ function newGame() {
     dealCards();
 }
 
-// Init
 newGame();
-attachPileDropTargets(); // <-- crucial so Aces/Kings can be dropped on empty piles
+attachPileDropTargets();
 </script>
 </body>
 </html>
