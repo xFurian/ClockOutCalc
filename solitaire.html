@@ -206,6 +206,10 @@ function createCardElement(card, pileId, index) {
         div.classList.add(card.color);
         div.draggable = true;
         div.addEventListener('dragstart', e => dragStart(e, pileId, index));
+        const sourcePile = getPileArray(pileId);
+        if (sourcePile && index === sourcePile.length - 1 && (pileId === 'waste' || pileId.startsWith('tableau'))) {
+            div.addEventListener('click', () => autoMoveToFoundation(pileId, index));
+        }
     }
     div.addEventListener('dragover', e => e.preventDefault());
     div.addEventListener('drop', e => drop(e, pileId));
@@ -227,6 +231,14 @@ function attachPileDropTargets() {
 }
 
 function dragStart(e, pileId, index) {
+    const sourcePile = getPileArray(pileId);
+    const moving = sourcePile.slice(index);
+    for (let k = 1; k < moving.length; k++) {
+        if (ranks.indexOf(moving[k].rank) !== ranks.indexOf(moving[k - 1].rank) - 1 ||
+            moving[k].color === moving[k - 1].color) {
+            return; // Invalid sequence, prevent drag
+        }
+    }
     e.dataTransfer.setData('text/plain', JSON.stringify({ pileId, index }));
 }
 
@@ -255,6 +267,7 @@ function drop(e, targetPileId) {
             sourcePile[sourcePile.length - 1].faceUp = true;
         }
         render();
+        checkWin();
     }
 }
 
@@ -286,11 +299,81 @@ function drawCard() {
         let card = stock.pop();
         card.faceUp = true;
         waste.push(card);
-    } else {
+    } else if (waste.length > 0) {
         stock = waste.reverse().map(c => ({ ...c, faceUp: false }));
         waste = [];
+    } else if (isAllFaceUp()) {
+        autoComplete();
     }
     render();
+}
+
+function isAllFaceUp() {
+    return tableau.every(pile => pile.every(card => card.faceUp));
+}
+
+function autoComplete() {
+    let moved;
+    do {
+        moved = false;
+        // Check waste
+        if (waste.length > 0) {
+            const card = waste[waste.length - 1];
+            for (let i = 0; i < 4; i++) {
+                const f = foundations[i];
+                if (isValidMove(`foundation${i + 1}`, card, f)) {
+                    waste.pop();
+                    f.push(card);
+                    moved = true;
+                    break;
+                }
+            }
+        }
+        // Check tableaus
+        for (let j = 0; j < 7; j++) {
+            const t = tableau[j];
+            if (t.length > 0) {
+                const card = t[t.length - 1];
+                for (let i = 0; i < 4; i++) {
+                    const f = foundations[i];
+                    if (isValidMove(`foundation${i + 1}`, card, f)) {
+                        t.pop();
+                        f.push(card);
+                        moved = true;
+                        break;
+                    }
+                }
+            }
+        }
+    } while (moved);
+    render();
+    checkWin();
+}
+
+function autoMoveToFoundation(pileId, index) {
+    const sourcePile = getPileArray(pileId);
+    if (index !== sourcePile.length - 1) return;
+    const card = sourcePile[index];
+    for (let i = 0; i < 4; i++) {
+        const f = foundations[i];
+        if (isValidMove(`foundation${i + 1}`, card, f)) {
+            sourcePile.pop();
+            f.push(card);
+            if (pileId.startsWith('tableau') && sourcePile.length > 0 && !sourcePile[sourcePile.length - 1].faceUp) {
+                sourcePile[sourcePile.length - 1].faceUp = true;
+            }
+            render();
+            checkWin();
+            return;
+        }
+    }
+}
+
+function checkWin() {
+    const totalInFoundations = foundations.reduce((sum, f) => sum + f.length, 0);
+    if (totalInFoundations === 52) {
+        alert('Congratulations! You won!');
+    }
 }
 
 function newGame() {
