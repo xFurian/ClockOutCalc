@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!-- CSS Styling -->
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Classic Solitaire</title>
@@ -167,6 +168,7 @@
 </style>
 </head>
 <body>
+<!-- HTML Structure -->
   <h1>Solitaire</h1>
 
   <div class="board">
@@ -202,7 +204,7 @@
   </div>
 
 <script>
-/* ---------- Data ---------- */
+<!-- JavaScript Data -->
 const suits = ['♠', '♣', '♥', '♦'];
 const ranks = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
 let deck = [], stock = [], waste = [], foundations = [[],[],[],[]], tableau = [[],[],[],[],[],[],[]];
@@ -210,6 +212,7 @@ let deck = [], stock = [], waste = [], foundations = [[],[],[],[]], tableau = [[
 let touchDragData = null;
 let lastTapTime = 0;
 
+<!-- JavaScript Setup Functions -->
 function createDeck(){
   deck = [];
   for (let suit of suits){
@@ -241,6 +244,7 @@ function dealCards(){
   renderWithBindings();
 }
 
+<!-- JavaScript Rendering Functions -->
 function render(){
   // Stock
   const stockCardEl = document.getElementById('stock-card');
@@ -306,6 +310,7 @@ function renderWithBindings(){
   attachPileDropTargets();
 }
 
+<!-- JavaScript Drag-and-Drop Handling -->
 function isValidSequence(cards){
   for (let k = 1; k < cards.length; k++){
     if (ranks.indexOf(cards[k].rank) !== ranks.indexOf(cards[k - 1].rank) - 1) return false;
@@ -334,6 +339,7 @@ function attachPileDropTargets(){
   });
 }
 
+<!-- JavaScript Touch Handling -->
 function handleCardTouchStart(e, pileId, index){
   if (!getPileArray(pileId)[index].faceUp) return;
   e.preventDefault();
@@ -404,6 +410,7 @@ function handleTouchEnd(e){
   document.removeEventListener('touchend', handleTouchEnd);
 }
 
+<!-- JavaScript Game Logic -->
 function getPileArray(id){
   if (id === 'waste') return waste;
   if (id.startsWith('foundation')) return foundations[parseInt(id[10]) - 1];
@@ -549,7 +556,7 @@ function newGame(){
   dealCards();
 }
 
-/* ---------- Boot ---------- */
+<!-- JavaScript Boot Process -->
 newGame();
 </script>
 </body>
