@@ -31,7 +31,6 @@
     font-size: clamp(18px, 4vw, 28px);
   }
 
-  /* Board centers the play area on wide screens */
   .board {
     width: 100%;
     max-width: 1100px;
@@ -42,7 +41,7 @@
   .top-bar {
     display: flex;
     align-items: center;
-    justify-content: space-between; /* buttons right on desktop */
+    justify-content: space-between;
     gap: 10px;
     margin-bottom: 12px;
   }
@@ -51,7 +50,7 @@
     display: flex;
     gap: 10px;
     flex-wrap: wrap;
-    justify-content: center;        /* centers piles row itself */
+    justify-content: center;
     flex: 1 1 auto;
   }
 
@@ -61,7 +60,7 @@
     flex: 0 0 auto;
   }
 
-  .piles-group { display: contents; } /* keep simple flow */
+  .piles-group { display: contents; }
 
   .pile {
     width: var(--pile-w);
@@ -89,7 +88,7 @@
     font-size: clamp(12px, 2.4vw, 20px);
     user-select: none;
     cursor: move;
-    touch-action: none; /* prevent scroll while dragging on touch */
+    touch-action: none;
   }
   .card.red { color: red; }
   .card.face-down {
@@ -103,10 +102,9 @@
     display: flex;
     gap: 10px;
     flex-wrap: wrap;
-    justify-content: center; /* center tableau row */
+    justify-content: center;
   }
 
-  /* Win7-ish buttons */
   button {
     padding: 10px 16px;
     font-size: clamp(12px, 2.5vw, 14px);
@@ -127,11 +125,35 @@
     outline-offset: -3px;
   }
 
-  /* Stack ghost for touch */
   #touch-ghost {
     position: absolute;
     pointer-events: none;
     z-index: 9999;
+  }
+
+  #reshuffle-circle {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(20px, 4vw, 30px); /* Larger refresh symbol */
+    color: #003366; /* Blue color for the symbol */
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
+  #reshuffle-circle.visible {
+    opacity: 1;
+  }
+  #reshuffle-circle.spin {
+    animation: spin 0.5s linear;
+  }
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
   }
 
   @media (max-width: 700px) {
@@ -148,11 +170,13 @@
   <h1>Solitaire</h1>
 
   <div class="board">
-    <!-- Top Row: Stock/Waste/Foundations + Controls -->
     <div class="top-bar">
       <div class="top-row">
         <div class="piles-group">
-          <div id="stock" class="pile" onclick="drawCard()"></div>
+          <div id="stock" class="pile" onclick="drawCard()">
+            <div id="reshuffle-circle">↻</div>
+            <div id="stock-card"></div>
+          </div>
           <div id="waste" class="pile"></div>
           <div id="foundation1" class="pile foundation"></div>
           <div id="foundation2" class="pile foundation"></div>
@@ -166,7 +190,6 @@
       </div>
     </div>
 
-    <!-- Tableau -->
     <div id="tableau-row">
       <div id="tableau1" class="pile tableau"></div>
       <div id="tableau2" class="pile tableau"></div>
@@ -184,11 +207,9 @@ const suits = ['♠', '♣', '♥', '♦'];
 const ranks = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
 let deck = [], stock = [], waste = [], foundations = [[],[],[],[]], tableau = [[],[],[],[],[],[],[]];
 
-/* touch helpers */
 let touchDragData = null;
 let lastTapTime = 0;
 
-/* ---------- Setup ---------- */
 function createDeck(){
   deck = [];
   for (let suit of suits){
@@ -220,10 +241,12 @@ function dealCards(){
   renderWithBindings();
 }
 
-/* ---------- Rendering ---------- */
 function render(){
   // Stock
-  document.getElementById('stock').innerHTML = stock.length ? '<div class="card face-down"></div>' : '';
+  const stockCardEl = document.getElementById('stock-card');
+  stockCardEl.innerHTML = stock.length ? '<div class="card face-down"></div>' : '';
+  const reshuffleCircle = document.getElementById('reshuffle-circle');
+  reshuffleCircle.classList.toggle('visible', stock.length === 0);
 
   // Waste
   const wasteEl = document.getElementById('waste');
@@ -261,22 +284,18 @@ function createCardElement(card, pileId, index){
     div.textContent = `${card.rank}${card.suit}`;
     div.classList.add(card.color);
 
-    // Desktop drag
     div.draggable = true;
     div.addEventListener('dragstart', e => dragStart(e, pileId, index));
 
-    // Quick move (only if it's the last card in waste or tableau)
     const pileArr = getPileArray(pileId);
     const isLast = pileArr && index === pileArr.length - 1 && (pileId === 'waste' || pileId.startsWith('tableau'));
     if (isLast){
       div.addEventListener('click', () => autoMoveToFoundation(pileId, index));
     }
 
-    // Touch start
     div.addEventListener('touchstart', e => handleCardTouchStart(e, pileId, index), { passive: false });
   }
 
-  // Allow dropping onto card (acts like pile face)
   div.addEventListener('dragover', e => e.preventDefault());
   div.addEventListener('drop', e => drop(e, pileId));
   return div;
@@ -287,9 +306,7 @@ function renderWithBindings(){
   attachPileDropTargets();
 }
 
-/* ---------- Drag & drop (desktop) ---------- */
 function isValidSequence(cards){
-  // returns true if cards are descending ranks and alternating colors
   for (let k = 1; k < cards.length; k++){
     if (ranks.indexOf(cards[k].rank) !== ranks.indexOf(cards[k - 1].rank) - 1) return false;
     if (cards[k].color === cards[k - 1].color) return false;
@@ -301,7 +318,6 @@ function dragStart(e, pileId, index){
   const src = getPileArray(pileId);
   const moving = src.slice(index);
 
-  // Must be a valid sequence if moving more than one from tableau
   if (pileId.startsWith('tableau') && moving.length > 1 && !isValidSequence(moving)){
     e.preventDefault();
     return;
@@ -318,12 +334,10 @@ function attachPileDropTargets(){
   });
 }
 
-/* ---------- Touch dragging ---------- */
 function handleCardTouchStart(e, pileId, index){
   if (!getPileArray(pileId)[index].faceUp) return;
   e.preventDefault();
 
-  // Double-tap quick move to foundation
   const now = Date.now();
   if (now - lastTapTime < 300){
     autoMoveToFoundation(pileId, index);
@@ -332,14 +346,12 @@ function handleCardTouchStart(e, pileId, index){
   }
   lastTapTime = now;
 
-  // Validate sequence before starting touch drag
   const src = getPileArray(pileId);
   const moving = src.slice(index);
   if (pileId.startsWith('tableau') && moving.length > 1 && !isValidSequence(moving)) return;
 
   touchDragData = { pileId, index };
 
-  // Build a visible ghost stack
   const ghost = document.createElement('div');
   ghost.id = 'touch-ghost';
   moving.forEach((card, i) => {
@@ -384,7 +396,7 @@ function handleTouchEnd(e){
   if (ghost) ghost.remove();
 
   if (targetPileEl){
-    drop(new Event('drop'), targetPileEl.id); // uses touchDragData
+    drop(new Event('drop'), targetPileEl.id);
   }
 
   touchDragData = null;
@@ -392,7 +404,6 @@ function handleTouchEnd(e){
   document.removeEventListener('touchend', handleTouchEnd);
 }
 
-/* ---------- Game logic ---------- */
 function getPileArray(id){
   if (id === 'waste') return waste;
   if (id.startsWith('foundation')) return foundations[parseInt(id[10]) - 1];
@@ -419,7 +430,6 @@ function isValidMove(targetId, movingCard, targetPile){
 function drop(e, targetPileId){
   e.preventDefault();
 
-  // Accept data from desktop DnD or touch
   let data = null;
   if (e.dataTransfer){
     const text = e.dataTransfer.getData('text');
@@ -437,10 +447,8 @@ function drop(e, targetPileId){
 
   let movingCards = sourcePile.slice(index);
 
-  // Ensure internal sequence validity (safety check)
   if (pileId.startsWith('tableau') && movingCards.length > 1 && !isValidSequence(movingCards)) return;
 
-  // Only single card to foundations
   if (targetPileId.startsWith('foundation') && movingCards.length > 1){
     movingCards = [movingCards[0]];
   }
@@ -449,7 +457,6 @@ function drop(e, targetPileId){
     sourcePile.splice(index, movingCards.length);
     targetPile.push(...movingCards);
 
-    // Flip the new top of source tableau face up
     if (pileId.startsWith('tableau') && sourcePile.length > 0 && !sourcePile[sourcePile.length - 1].faceUp){
       sourcePile[sourcePile.length - 1].faceUp = true;
     }
@@ -459,14 +466,21 @@ function drop(e, targetPileId){
 }
 
 function drawCard(){
+  console.log('drawCard called, stock length:', stock.length, 'waste length:', waste.length);
   if (stock.length > 0){
     const card = stock.pop();
     card.faceUp = true;
     waste.push(card);
+    console.log('Drew card:', card);
   } else if (waste.length > 0){
+    const reshuffleCircle = document.getElementById('reshuffle-circle');
+    reshuffleCircle.classList.add('spin');
+    setTimeout(() => reshuffleCircle.classList.remove('spin'), 500);
     stock = waste.reverse().map(c => ({ ...c, faceUp: false }));
     waste = [];
+    console.log('Reshuffled, new stock length:', stock.length);
   } else if (isAllFaceUp()){
+    console.log('All face up, running autoComplete');
     autoComplete();
   }
   renderWithBindings();
@@ -480,7 +494,6 @@ function autoComplete(){
   let moved;
   do {
     moved = false;
-    // Waste to foundations
     if (waste.length > 0){
       const card = waste[waste.length - 1];
       for (let i = 0; i < 4; i++){
@@ -490,7 +503,6 @@ function autoComplete(){
         }
       }
     }
-    // Tableau tops to foundations
     for (let j = 0; j < 7; j++){
       const t = tableau[j];
       if (t.length > 0){
@@ -510,7 +522,7 @@ function autoComplete(){
 
 function autoMoveToFoundation(pileId, index){
   const sourcePile = getPileArray(pileId);
-  if (!sourcePile || index !== sourcePile.length - 1) return; // only top card
+  if (!sourcePile || index !== sourcePile.length - 1) return;
   const card = sourcePile[index];
   for (let i = 0; i < 4; i++){
     const f = foundations[i];
@@ -532,7 +544,10 @@ function checkWin(){
   if (total === 52) alert('Congratulations! You won!');
 }
 
-function newGame(){ createDeck(); dealCards(); }
+function newGame(){
+  createDeck();
+  dealCards();
+}
 
 /* ---------- Boot ---------- */
 newGame();
