@@ -70,11 +70,23 @@
     .cell.flagged {
       background-color: #000000;
     }
+    .cell.question {
+      background-color: #000000;
+    }
     .cell.revealed.mine::before {
       content: '💣';
     }
     .cell.flagged::before {
       content: '🚩';
+    }
+    .cell.question::before {
+      content: '?';
+      color: #003366;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      height: 100%;
     }
     #game-status {
       margin-top: 10px;
@@ -167,7 +179,7 @@
       for (let i = 0; i < ROWS; i++) {
         board[i] = [];
         for (let j = 0; j < COLS; j++) {
-          board[i][j] = { mine: false, revealed: false, flagged: false, adjacentMines: 0 };
+          board[i][j] = { mine: false, revealed: false, flagged: false, question: false, adjacentMines: 0 };
         }
       }
       let minesPlaced = 0;
@@ -224,6 +236,8 @@
             }
           } else if (board[i][j].flagged) {
             cell.classList.add('flagged');
+          } else if (board[i][j].question) {
+            cell.classList.add('question');
           }
           cell.addEventListener('click', handleClick);
           cell.addEventListener('contextmenu', handleRightClick);
@@ -236,7 +250,7 @@
       if (gameOver) return;
       const row = parseInt(event.target.dataset.row);
       const col = parseInt(event.target.dataset.col);
-      if (board[row][col].flagged || board[row][col].revealed) return;
+      if (board[row][col].flagged || board[row][col].revealed || board[row][col].question) return;
       revealCell(row, col);
       renderBoard();
       checkWin();
@@ -248,13 +262,20 @@
       const row = parseInt(event.target.dataset.row);
       const col = parseInt(event.target.dataset.col);
       if (!board[row][col].revealed) {
-        board[row][col].flagged = !board[row][col].flagged;
+        if (!board[row][col].flagged && !board[row][col].question) {
+          board[row][col].flagged = true;
+        } else if (board[row][col].flagged) {
+          board[row][col].flagged = false;
+          board[row][col].question = true;
+        } else if (board[row][col].question) {
+          board[row][col].question = false;
+        }
         renderBoard();
       }
     }
 
     function revealCell(row, col) {
-      if (row < 0 || row >= ROWS || col < 0 || col >= COLS || board[row][col].revealed || board[row][col].flagged) {
+      if (row < 0 || row >= ROWS || col < 0 || col >= COLS || board[row][col].revealed || board[row][col].flagged || board[row][col].question) {
         return;
       }
       board[row][col].revealed = true;
@@ -288,18 +309,19 @@
       if (revealedCount === ROWS * COLS - MINES && !gameOver) {
         gameOver = true;
         const time = (Date.now() - startTime) / 1000;
-        const nonMines = ROWS * COLS - MINES;
+        const totalCells = ROWS * COLS;
+        const mineDensity = MINES / totalCells;
         let rank;
-        if (time < nonMines * 0.2) {
+        if (mineDensity >= 0.3) {
           rank = 'Master level';
-        } else if (time < nonMines * 0.5) {
+        } else if (mineDensity >= 0.15) {
           rank = 'Intermediate level';
-        } else if (time < nonMines) {
+        } else if (mineDensity >= 0.05) {
           rank = 'Beginner level';
         } else {
           rank = 'Novice level';
         }
-        alert(`You've won!\nTime: ${time.toFixed(2)} seconds\nRank: ${rank}`);
+        alert(`You've won!\nTime: ${time.toFixed(2)} seconds\nRank: ${rank}\nGrid: ${ROWS}x${COLS}, Mines: ${MINES}`);
         initializeBoard();
       }
     }
