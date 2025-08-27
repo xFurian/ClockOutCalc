@@ -51,7 +51,7 @@
     .container {
       background-color: #808080;
       padding: 10px;
-      border: 3px solid;
+      border: 2px solid;
       border-top-color: #d3d3d3;
       border-left-color: #d3d3d3;
       border-right-color: #404040;
@@ -63,7 +63,7 @@
       font-weight: bold;
       margin-bottom: 10px;
       text-align: center;
-      color: #000000;
+      color: #fff;
     }
     #game-board {
       display: grid;
@@ -80,12 +80,8 @@
     .cell {
       width: 30px;
       height: 30px;
-      background-color: #ffffff;
-      border: 2px solid;
-      border-top-color: #d3d3d3;
-      border-left-color: #d3d3d3;
-      border-right-color: #404040;
-      border-bottom-color: #404040;
+      background-color: #000000;
+      border: 1px solid #003366;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -93,19 +89,20 @@
       font-family: 'Courier New', monospace;
       cursor: pointer;
       user-select: none;
-      color: #000000;
+      color: #fff;
     }
     .cell.revealed {
       background-color: #ffffff;
-      border: 1px solid #404040;
+      border: 1px solid #003366;
+      color: #000000;
       cursor: default;
     }
     .cell.mine {
       background-color: #ff0000;
-      border: 1px solid #404040;
+      border: 1px solid #003366;
     }
     .cell.flagged {
-      background-color: #ffffff;
+      background-color: #000000;
     }
     .cell.revealed.mine::before {
       content: '💣';
@@ -118,27 +115,26 @@
       font-size: 16px;
       font-weight: bold;
       text-align: center;
-      color: #000000;
+      color: #fff;
     }
     #restart-btn {
       margin-top: 10px;
-      padding: 5px 15px;
+      padding: 10px 16px;
       font-size: 14px;
       font-family: 'MS Sans Serif', 'Arial', sans-serif;
-      background-color: #ffffff;
-      border: 2px solid;
-      border-top-color: #d3d3d3;
-      border-left-color: #d3d3d3;
-      border-right-color: #404040;
-      border-bottom-color: #404040;
+      background: linear-gradient(to bottom, #f2f2f2, #d9d9d9);
+      border: 1px solid #888;
+      border-radius: 4px;
+      box-shadow: inset 0 1px 0 #fff, 0 1px 2px rgba(0,0,0,0.2);
       cursor: pointer;
       color: #000000;
     }
+    #restart-btn:hover {
+      background: linear-gradient(to bottom, #ffffff, #cfcfcf);
+    }
     #restart-btn:active {
-      border-top-color: #404040;
-      border-left-color: #404040;
-      border-right-color: #d3d3d3;
-      border-bottom-color: #d3d3d3;
+      background: linear-gradient(to bottom, #cfcfcf, #ffffff);
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
     }
   </style>
 </head>
