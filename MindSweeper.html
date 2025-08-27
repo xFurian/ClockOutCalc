@@ -17,6 +17,7 @@
       background-color: #808080; /* Gray background matching Solitaire theme */
       font-family: 'MS Sans Serif', 'Arial', sans-serif;
       margin: 0;
+      touch-action: manipulation; /* Enable basic touch support */
     }
     /* Container for game board and settings, using flex layout */
     .container {
@@ -63,6 +64,8 @@
       cursor: pointer;
       user-select: none;
       color: #fff; /* White text for visibility */
+      min-width: 30px; /* Minimum width for responsive scaling */
+      min-height: 30px;
     }
     /* Styling for revealed cells */
     .cell.revealed {
@@ -102,17 +105,26 @@
       width: 100%;
       height: 100%;
     }
-    /* Styling for game status message */
-    #game-status {
+    /* Styling for game status and additional info */
+    #game-info {
+      display: flex;
+      justify-content: space-between;
       margin-top: 10px;
       font-size: 16px;
       font-weight: bold;
       text-align: center;
       color: #fff;
     }
-    /* Styling for buttons (restart, back, adjust) */
-    #restart-btn, #back-btn, #adjust-btn {
+    #game-status, #timer, #mine-counter {
+      margin: 0 5px;
+    }
+    /* Styling for buttons (restart, back, adjust, hint, undo, save, load) */
+    .button-group {
       margin-top: 10px;
+      display: flex;
+      gap: 10px;
+    }
+    #restart-btn, #back-btn, #adjust-btn, #hint-btn, #undo-btn, #save-btn, #load-btn, #mute-btn {
       padding: 10px 16px;
       font-size: 14px;
       font-family: 'MS Sans Serif', 'Arial', sans-serif;
@@ -124,11 +136,11 @@
       color: #000000;
     }
     /* Hover effect for buttons */
-    #restart-btn:hover, #back-btn:hover, #adjust-btn:hover {
+    #restart-btn:hover, #back-btn:hover, #adjust-btn:hover, #hint-btn:hover, #undo-btn:hover, #save-btn:hover, #load-btn:hover, #mute-btn:hover {
       background: linear-gradient(to bottom, #ffffff, #cfcfcf);
     }
     /* Active effect for buttons */
-    #restart-btn:active, #back-btn:active, #adjust-btn:active {
+    #restart-btn:active, #back-btn:active, #adjust-btn:active, #hint-btn:active, #undo-btn:active, #save-btn:active, #load-btn:active, #mute-btn:active {
       background: linear-gradient(to bottom, #cfcfcf, #ffffff);
       box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
     }
@@ -163,6 +175,14 @@
       background-color: #ffffff;
       color: #000000;
     }
+    /* Theme switcher styling */
+    .theme-switch {
+      margin-top: 10px;
+    }
+    .theme-option {
+      margin-right: 10px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -173,12 +193,29 @@
       <h1>Minesweeper</h1>
       <!-- Game board grid -->
       <div id="game-board"></div>
-      <!-- Status message area -->
-      <div id="game-status"></div>
-      <!-- Button to restart the game -->
-      <button id="restart-btn">Restart Game</button>
-      <!-- Button to navigate back to calculator -->
-      <button id="back-btn" onclick="window.location.href='http://www.protoncube.com/'">Back to Calculator</button>
+      <!-- Info section for status, timer, and mine counter -->
+      <div id="game-info">
+        <div id="game-status"></div>
+        <div id="timer">Time: 0s</div>
+        <div id="mine-counter">Mines: 10</div>
+      </div>
+      <!-- Button group for various actions -->
+      <div class="button-group">
+        <button id="restart-btn">Restart Game</button>
+        <button id="back-btn" onclick="window.location.href='http://www.protoncube.com/'">Back to Calculator</button>
+        <button id="hint-btn" disabled>Hint (0/3)</button>
+        <button id="undo-btn" disabled>Undo</button>
+        <button id="save-btn">Save</button>
+        <button id="load-btn">Load</button>
+      </div>
+      <!-- Theme switcher -->
+      <div class="theme-switch">
+        <span class="theme-option" onclick="setTheme('classic')">Classic</span>
+        <span class="theme-option" onclick="setTheme('dark')">Dark</span>
+        <span class="theme-option" onclick="setTheme('high-contrast')">High Contrast</span>
+      </div>
+      <!-- Mute toggle button -->
+      <button id="mute-btn">Mute</button>
     </div>
     <!-- Settings panel -->
     <div class="settings">
@@ -186,6 +223,15 @@
       <div class="settings-header" onclick="toggleSettings()">Change Settings</div>
       <!-- Collapsible content for settings inputs -->
       <div class="settings-content" id="settings-content">
+        <!-- Dropdown for difficulty presets -->
+        <label>Difficulty: 
+          <select id="difficulty-select" onchange="setDifficulty()">
+            <option value="custom">Custom</option>
+            <option value="easy">Easy (9x9, 10 mines)</option>
+            <option value="medium">Medium (16x16, 40 mines)</option>
+            <option value="hard">Hard (30x16, 99 mines)</option>
+          </select>
+        </label>
         <!-- Input for number of rows -->
         <label>Rows: <input type="number" id="rows-input" min="4" max="99" value="8"></label>
         <!-- Input for number of columns -->
@@ -197,6 +243,10 @@
       </div>
     </div>
   </div>
+  <!-- Audio elements for sound effects -->
+  <audio id="click-sound" src="data:audio/mpeg;base64,//... (base64 encoded click sound) ..."></audio>
+  <audio id="mine-sound" src="data:audio/mpeg;base64,//... (base64 encoded explosion sound) ..."></audio>
+  <audio id="win-sound" src="data:audio/mpeg;base64,//... (base64 encoded cheer sound) ..."></audio>
   <script>
     // Global variables for game dimensions and state
     let ROWS = 8;
@@ -206,6 +256,12 @@
     let revealedCount = 0; // Counter for revealed non-mine cells
     let gameOver = false; // Flag to track game end state
     let startTime; // Timestamp to track game start
+    let currentTime = 0; // Current elapsed time in seconds
+    let timerInterval; // Interval for real-time timer
+    let moveHistory = []; // Stack to store last move for undo
+    let hintsLeft = 3; // Limit hints to 3 per game
+    let isMuted = false; // Track mute state
+    let currentTheme = 'classic'; // Track current theme
 
     // Initialize the game board with mines and calculate adjacent mines
     function initializeBoard() {
@@ -213,7 +269,14 @@
       board = [];
       revealedCount = 0;
       gameOver = false;
+      moveHistory = [];
+      hintsLeft = 3;
       document.getElementById('game-status').textContent = '';
+      document.getElementById('hint-btn').disabled = false;
+      document.getElementById('hint-btn').textContent = `Hint (${hintsLeft}/3)`;
+      document.getElementById('undo-btn').disabled = false;
+      updateMineCounter();
+      startTimer();
       for (let i = 0; i < ROWS; i++) {
         board[i] = [];
         for (let j = 0; j < COLS; j++) {
@@ -257,14 +320,14 @@
     // Render the game board to the DOM
     function renderBoard() {
       const gameBoard = document.getElementById('game-board');
-      gameBoard.style.gridTemplateColumns = `repeat(${COLS}, 30px)`;
+      gameBoard.style.gridTemplateColumns = `repeat(${COLS}, ${Math.max(20, 30 * (window.innerWidth > 600 ? 1 : 0.5))}px)`;
       gameBoard.innerHTML = '';
       for (let i = 0; i < ROWS; i++) {
         for (let j = 0; j < COLS; j++) {
           const cell = document.createElement('div');
           cell.classList.add('cell');
-          cell.style.width = '30px';
-          cell.style.height = '30px';
+          cell.style.width = `${Math.max(20, 30 * (window.innerWidth > 600 ? 1 : 0.5))}px`;
+          cell.style.height = `${Math.max(20, 30 * (window.innerWidth > 600 ? 1 : 0.5))}px`;
           cell.dataset.row = i;
           cell.dataset.col = j;
           if (board[i][j].revealed) {
@@ -281,6 +344,7 @@
           }
           cell.addEventListener('click', handleClick);
           cell.addEventListener('contextmenu', handleRightClick);
+          cell.addEventListener('touchstart', handleTouchStart, { passive: true });
           gameBoard.appendChild(cell);
         }
       }
@@ -292,9 +356,28 @@
       const row = parseInt(event.target.dataset.row);
       const col = parseInt(event.target.dataset.col);
       if (board[row][col].flagged || board[row][col].revealed || board[row][col].question) return;
+      moveHistory.push({ row, col, action: 'reveal' });
       revealCell(row, col);
+      if (!isMuted) document.getElementById('click-sound').play();
       renderBoard();
       checkWin();
+    }
+
+    // Handle touch start for mobile (simulates click)
+    function handleTouchStart(event) {
+      if (gameOver) return;
+      const touch = event.touches[0];
+      const cell = document.elementFromPoint(touch.clientX, touch.clientY);
+      if (cell && cell.classList.contains('cell')) {
+        const row = parseInt(cell.dataset.row);
+        const col = parseInt(cell.dataset.col);
+        if (board[row][col].flagged || board[row][col].revealed || board[row][col].question) return;
+        moveHistory.push({ row, col, action: 'reveal' });
+        revealCell(row, col);
+        if (!isMuted) document.getElementById('click-sound').play();
+        renderBoard();
+        checkWin();
+      }
     }
 
     // Handle right click to cycle through flag and question states
@@ -304,6 +387,7 @@
       const row = parseInt(event.target.dataset.row);
       const col = parseInt(event.target.dataset.col);
       if (!board[row][col].revealed) {
+        const prevState = { flagged: board[row][col].flagged, question: board[row][col].question };
         if (!board[row][col].flagged && !board[row][col].question) {
           board[row][col].flagged = true;
         } else if (board[row][col].flagged) {
@@ -312,6 +396,8 @@
         } else if (board[row][col].question) {
           board[row][col].question = false;
         }
+        moveHistory.push({ row, col, action: 'rightClick', prevState });
+        updateMineCounter();
         renderBoard();
       }
     }
@@ -327,6 +413,7 @@
         gameOver = true;
         revealAllMines();
         document.getElementById('game-status').textContent = 'Game Over! You hit a mine!';
+        if (!isMuted) document.getElementById('mine-sound').play();
         return;
       }
       if (board[row][col].adjacentMines === 0) {
@@ -353,6 +440,7 @@
     function checkWin() {
       if (revealedCount === ROWS * COLS - MINES && !gameOver) {
         gameOver = true;
+        clearInterval(timerInterval);
         const time = (Date.now() - startTime) / 1000;
         const totalCells = ROWS * COLS;
         const mineDensity = MINES / totalCells;
@@ -366,9 +454,26 @@
         } else {
           rank = 'Novice level';
         }
+        if (!isMuted) document.getElementById('win-sound').play();
         alert(`You've won!\nTime: ${time.toFixed(2)} seconds\nRank: ${rank}\nGrid: ${ROWS}x${COLS}, Mines: ${MINES}`);
+        saveScore(time, rank, ROWS, COLS, MINES);
         initializeBoard();
       }
+    }
+
+    // Start and update the real-time timer
+    function startTimer() {
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        currentTime = (Date.now() - startTime) / 1000;
+        document.getElementById('timer').textContent = `Time: ${currentTime.toFixed(2)}s`;
+      }, 1000);
+    }
+
+    // Update the mine counter based on flagged cells
+    function updateMineCounter() {
+      const flaggedCount = board.flat().filter(cell => cell.flagged).length;
+      document.getElementById('mine-counter').textContent = `Mines: ${MINES - flaggedCount}`;
     }
 
     // Toggle visibility of settings panel
@@ -377,7 +482,7 @@
       content.classList.toggle('active');
     }
 
-    // Adjust game settings based on user input
+    // Adjust game settings based on user input or preset
     function adjustGame() {
       const rows = parseInt(document.getElementById('rows-input').value);
       const cols = parseInt(document.getElementById('cols-input').value);
@@ -389,12 +494,178 @@
         MINES = mines;
         initializeBoard();
       } else {
-        alert('Please enter valid values (Rows/Cols: 4-99, Mines: 1 to (Rows*Cols-1)).');
+        alert('Invalid input: Rows/Cols must be 4-99, Mines must be 1 to (Rows*Cols-1).');
       }
     }
 
-    // Add event listener for restart button
+    // Set difficulty preset
+    function setDifficulty() {
+      const difficulty = document.getElementById('difficulty-select').value;
+      switch (difficulty) {
+        case 'easy':
+          ROWS = 9;
+          COLS = 9;
+          MINES = 10;
+          break;
+        case 'medium':
+          ROWS = 16;
+          COLS = 16;
+          MINES = 40;
+          break;
+        case 'hard':
+          ROWS = 30;
+          COLS = 16;
+          MINES = 99;
+          break;
+        case 'custom':
+          return; // No change, use current values
+      }
+      document.getElementById('rows-input').value = ROWS;
+      document.getElementById('cols-input').value = COLS;
+      document.getElementById('mines-input').value = MINES;
+      initializeBoard();
+    }
+
+    // Provide a hint by revealing a safe cell
+    function useHint() {
+      if (gameOver || hintsLeft <= 0) return;
+      let safeCells = [];
+      for (let i = 0; i < ROWS; i++) {
+        for (let j = 0; j < COLS; j++) {
+          if (!board[i][j].revealed && !board[i][j].mine && !board[i][j].flagged && !board[i][j].question) {
+            safeCells.push({ row: i, col: j });
+          }
+        }
+      }
+      if (safeCells.length > 0) {
+        const { row, col } = safeCells[Math.floor(Math.random() * safeCells.length)];
+        moveHistory.push({ row, col, action: 'reveal' });
+        revealCell(row, col);
+        hintsLeft--;
+        document.getElementById('hint-btn').textContent = `Hint (${hintsLeft}/3)`;
+        if (hintsLeft === 0) document.getElementById('hint-btn').disabled = true;
+        renderBoard();
+        checkWin();
+      }
+    }
+
+    // Undo the last move
+    function undoMove() {
+      if (gameOver || moveHistory.length === 0) return;
+      const lastMove = moveHistory.pop();
+      const { row, col, action, prevState } = lastMove;
+      if (action === 'reveal') {
+        board[row][col].revealed = false;
+        revealedCount--;
+      } else if (action === 'rightClick' && prevState) {
+        board[row][col].flagged = prevState.flagged;
+        board[row][col].question = prevState.question;
+        updateMineCounter();
+      }
+      renderBoard();
+      document.getElementById('undo-btn').disabled = moveHistory.length === 0;
+    }
+
+    // Save game state to localStorage
+    function saveGame() {
+      const gameState = {
+        ROWS, COLS, MINES, board, revealedCount, gameOver, startTime, currentTime, moveHistory, hintsLeft
+      };
+      localStorage.setItem('minesweeperSave', JSON.stringify(gameState));
+      alert('Game saved!');
+    }
+
+    // Load game state from localStorage
+    function loadGame() {
+      const savedState = localStorage.getItem('minesweeperSave');
+      if (savedState) {
+        const gameState = JSON.parse(savedState);
+        ROWS = gameState.ROWS;
+        COLS = gameState.COLS;
+        MINES = gameState.MINES;
+        board = gameState.board;
+        revealedCount = gameState.revealedCount;
+        gameOver = gameState.gameOver;
+        startTime = gameState.startTime;
+        currentTime = gameState.currentTime;
+        moveHistory = gameState.moveHistory;
+        hintsLeft = gameState.hintsLeft;
+        document.getElementById('rows-input').value = ROWS;
+        document.getElementById('cols-input').value = COLS;
+        document.getElementById('mines-input').value = MINES;
+        document.getElementById('hint-btn').textContent = `Hint (${hintsLeft}/3)`;
+        document.getElementById('hint-btn').disabled = hintsLeft === 0;
+        document.getElementById('undo-btn').disabled = moveHistory.length === 0;
+        updateMineCounter();
+        renderBoard();
+        if (!gameOver) startTimer();
+        else clearInterval(timerInterval);
+      } else {
+        alert('No saved game found!');
+      }
+    }
+
+    // Save high score to localStorage
+    function saveScore(time, rank, rows, cols, mines) {
+      let scores = JSON.parse(localStorage.getItem('minesweeperScores') || '[]');
+      scores.push({ time, rank, rows, cols, mines, date: new Date().toLocaleString() });
+      scores.sort((a, b) => a.time - b.time);
+      scores = scores.slice(0, 5); // Keep top 5
+      localStorage.setItem('minesweeperScores', JSON.stringify(scores));
+    }
+
+    // Display high scores in an alert
+    function showHighScores() {
+      const scores = JSON.parse(localStorage.getItem('minesweeperScores') || '[]');
+      if (scores.length === 0) {
+        alert('No high scores yet!');
+        return;
+      }
+      let message = 'High Scores:\n';
+      scores.forEach((score, index) => {
+        message += `${index + 1}. Time: ${score.time.toFixed(2)}s, Rank: ${score.rank}, Grid: ${score.rows}x${score.cols}, Mines: ${score.mines}, Date: ${score.date}\n`;
+      });
+      alert(message);
+    }
+
+    // Set color theme
+    function setTheme(theme) {
+      currentTheme = theme;
+      const body = document.body;
+      const cells = document.querySelectorAll('.cell');
+      const buttons = document.querySelectorAll('button');
+      if (theme === 'dark') {
+        body.style.backgroundColor = '#1a1a1a';
+        cells.forEach(cell => cell.style.backgroundColor = '#333333');
+        buttons.forEach(btn => btn.style.background = 'linear-gradient(to bottom, #444444, #333333)');
+      } else if (theme === 'high-contrast') {
+        body.style.backgroundColor = '#000000';
+        cells.forEach(cell => cell.style.backgroundColor = '#ffffff');
+        buttons.forEach(btn => btn.style.background = 'linear-gradient(to bottom, #ff0000, #cc0000)');
+      } else { // classic
+        body.style.backgroundColor = '#808080';
+        cells.forEach(cell => cell.style.backgroundColor = '#000000');
+        buttons.forEach(btn => btn.style.background = 'linear-gradient(to bottom, #f2f2f2, #d9d9d9)');
+      }
+      renderBoard(); // Re-render to apply theme to cells
+    }
+
+    // Toggle mute state and update button text
+    function toggleMute() {
+      isMuted = !isMuted;
+      document.getElementById('mute-btn').textContent = isMuted ? 'Unmute' : 'Mute';
+    }
+
+    // Add event listeners for buttons
     document.getElementById('restart-btn').addEventListener('click', initializeBoard);
+    document.getElementById('back-btn').addEventListener('click', () => window.location.href = 'http://www.protoncube.com/');
+    document.getElementById('hint-btn').addEventListener('click', useHint);
+    document.getElementById('undo-btn').addEventListener('click', undoMove);
+    document.getElementById('save-btn').addEventListener('click', saveGame);
+    document.getElementById('load-btn').addEventListener('click', loadGame);
+    document.getElementById('mute-btn').addEventListener('click', toggleMute);
+    document.getElementById('game-info').addEventListener('click', showHighScores); // Click info to show scores
+
     initializeBoard();
   </script>
 </body>
