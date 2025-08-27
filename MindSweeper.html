@@ -4,39 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Minesweeper</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-  <script type="text/javascript">
-        var gk_isXlsx = false;
-        var gk_xlsxFileLookup = {};
-        var gk_fileData = {};
-        function filledCell(cell) {
-          return cell !== '' && cell != null;
-        }
-        function loadFileData(filename) {
-        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
-            try {
-                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
-                var firstSheetName = workbook.SheetNames[0];
-                var worksheet = workbook.Sheets[firstSheetName];
-                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
-                var filteredData = jsonData.filter(row => row.some(filledCell));
-                var headerRowIndex = filteredData.findIndex((row, index) =>
-                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
-                );
-                if (headerRowIndex === -1 || headerRowIndex > 25) {
-                  headerRowIndex = 0;
-                }
-                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex));
-                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
-                return csv;
-            } catch (e) {
-                console.error(e);
-                return "";
-            }
-        }
-        return gk_fileData[filename] || "";
-        }
-  </script>
   <style>
     body {
       display: flex;
@@ -49,6 +16,8 @@
       margin: 0;
     }
     .container {
+      display: flex;
+      gap: 20px;
       background-color: #808080;
       padding: 10px;
       border: 2px solid;
@@ -67,7 +36,6 @@
     }
     #game-board {
       display: grid;
-      grid-template-columns: repeat(8, 30px);
       gap: 1px;
       background-color: #808080;
       padding: 5px;
@@ -78,8 +46,6 @@
       border-bottom-color: #d3d3d3;
     }
     .cell {
-      width: 30px;
-      height: 30px;
       background-color: #000000;
       border: 1px solid #003366;
       display: flex;
@@ -117,7 +83,7 @@
       text-align: center;
       color: #fff;
     }
-    #restart-btn, #back-btn {
+    #restart-btn, #back-btn, #adjust-btn {
       margin-top: 10px;
       padding: 10px 16px;
       font-size: 14px;
@@ -129,31 +95,71 @@
       cursor: pointer;
       color: #000000;
     }
-    #restart-btn:hover, #back-btn:hover {
+    #restart-btn:hover, #back-btn:hover, #adjust-btn:hover {
       background: linear-gradient(to bottom, #ffffff, #cfcfcf);
     }
-    #restart-btn:active, #back-btn:active {
+    #restart-btn:active, #back-btn:active, #adjust-btn:active {
       background: linear-gradient(to bottom, #cfcfcf, #ffffff);
       box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+    }
+    .settings {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      color: #fff;
+    }
+    .settings-header {
+      font-weight: bold;
+      cursor: pointer;
+      margin-bottom: 5px;
+    }
+    .settings-content {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .settings-content.active {
+      display: flex;
+    }
+    .settings input {
+      padding: 5px;
+      font-size: 14px;
+      border: 1px solid #003366;
+      background-color: #ffffff;
+      color: #000000;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Minesweeper</h1>
-    <div id="game-board"></div>
-    <div id="game-status"></div>
-    <button id="restart-btn">Restart Game</button>
-    <button id="back-btn" onclick="window.location.href='http://www.protoncube.com/'">Back to Calculator</button>
+    <div>
+      <h1>Minesweeper</h1>
+      <div id="game-board"></div>
+      <div id="game-status"></div>
+      <button id="restart-btn">Restart Game</button>
+      <button id="back-btn" onclick="window.location.href='http://www.protoncube.com/'">Back to Calculator</button>
+    </div>
+    <div class="settings">
+      <div class="settings-header" onclick="toggleSettings()">Change Settings</div>
+      <div class="settings-content" id="settings-content">
+        <label>Rows: <input type="number" id="rows-input" min="4" max="99" value="8"></label>
+        <label>Cols: <input type="number" id="cols-input" min="4" max="99" value="8"></label>
+        <label>Mines: <input type="number" id="mines-input" min="1" max="100" value="10"></label>
+        <button id="adjust-btn" onclick="adjustGame()">Adjust</button>
+      </div>
+    </div>
   </div>
   <script>
-    const ROWS = 8;
-    const COLS = 8;
-    const MINES = 10;
+    let ROWS = 8;
+    let COLS = 8;
+    let MINES = 10;
     let board = [];
     let revealedCount = 0;
     let gameOver = false;
+    let startTime;
+
     function initializeBoard() {
+      startTime = Date.now();
       board = [];
       revealedCount = 0;
       gameOver = false;
@@ -182,6 +188,7 @@
       }
       renderBoard();
     }
+
     function countAdjacentMines(row, col) {
       let count = 0;
       for (let i = -1; i <= 1; i++) {
@@ -195,13 +202,17 @@
       }
       return count;
     }
+
     function renderBoard() {
       const gameBoard = document.getElementById('game-board');
+      gameBoard.style.gridTemplateColumns = `repeat(${COLS}, 30px)`;
       gameBoard.innerHTML = '';
       for (let i = 0; i < ROWS; i++) {
         for (let j = 0; j < COLS; j++) {
           const cell = document.createElement('div');
           cell.classList.add('cell');
+          cell.style.width = '30px';
+          cell.style.height = '30px';
           cell.dataset.row = i;
           cell.dataset.col = j;
           if (board[i][j].revealed) {
@@ -220,6 +231,7 @@
         }
       }
     }
+
     function handleClick(event) {
       if (gameOver) return;
       const row = parseInt(event.target.dataset.row);
@@ -229,6 +241,7 @@
       renderBoard();
       checkWin();
     }
+
     function handleRightClick(event) {
       event.preventDefault();
       if (gameOver) return;
@@ -239,6 +252,7 @@
         renderBoard();
       }
     }
+
     function revealCell(row, col) {
       if (row < 0 || row >= ROWS || col < 0 || col >= COLS || board[row][col].revealed || board[row][col].flagged) {
         return;
@@ -259,6 +273,7 @@
         }
       }
     }
+
     function revealAllMines() {
       for (let i = 0; i < ROWS; i++) {
         for (let j = 0; j < COLS; j++) {
@@ -268,12 +283,47 @@
         }
       }
     }
+
     function checkWin() {
       if (revealedCount === ROWS * COLS - MINES && !gameOver) {
         gameOver = true;
-        document.getElementById('game-status').textContent = 'Congratulations! You won!';
+        const time = (Date.now() - startTime) / 1000;
+        const nonMines = ROWS * COLS - MINES;
+        let rank;
+        if (time < nonMines * 0.2) {
+          rank = 'Master level';
+        } else if (time < nonMines * 0.5) {
+          rank = 'Intermediate level';
+        } else if (time < nonMines) {
+          rank = 'Beginner level';
+        } else {
+          rank = 'Novice level';
+        }
+        alert(`You've won!\nTime: ${time.toFixed(2)} seconds\nRank: ${rank}`);
+        initializeBoard();
       }
     }
+
+    function toggleSettings() {
+      const content = document.getElementById('settings-content');
+      content.classList.toggle('active');
+    }
+
+    function adjustGame() {
+      const rows = parseInt(document.getElementById('rows-input').value);
+      const cols = parseInt(document.getElementById('cols-input').value);
+      const mines = parseInt(document.getElementById('mines-input').value);
+
+      if (rows >= 4 && rows <= 99 && cols >= 4 && cols <= 99 && mines >= 1 && mines <= rows * cols - 1) {
+        ROWS = rows;
+        COLS = cols;
+        MINES = mines;
+        initializeBoard();
+      } else {
+        alert('Please enter valid values (Rows/Cols: 4-99, Mines: 1 to (Rows*Cols-1)).');
+      }
+    }
+
     document.getElementById('restart-btn').addEventListener('click', initializeBoard);
     initializeBoard();
   </script>
