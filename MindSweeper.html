@@ -1,39 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Meta tags for character encoding and responsive viewport -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Title of the webpage -->
   <title>Minesweeper</title>
   <style>
+    /* General styling for body to center content vertically and horizontally */
     body {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       min-height: 100vh;
-      background-color: #808080;
+      background-color: #808080; /* Gray background matching Solitaire theme */
       font-family: 'MS Sans Serif', 'Arial', sans-serif;
       margin: 0;
     }
+    /* Container for game board and settings, using flex layout */
     .container {
       display: flex;
       gap: 20px;
       background-color: #808080;
       padding: 10px;
       border: 2px solid;
-      border-top-color: #d3d3d3;
+      border-top-color: #d3d3d3; /* Light gray for top/left borders */
       border-left-color: #d3d3d3;
-      border-right-color: #404040;
+      border-right-color: #404040; /* Dark gray for right/bottom borders */
       border-bottom-color: #404040;
-      box-shadow: inset -1px -1px #000000, inset 1px 1px #ffffff;
+      box-shadow: inset -1px -1px #000000, inset 1px 1px #ffffff; /* Inset shadow for 3D effect */
     }
+    /* Styling for the game title */
     h1 {
       font-size: 24px;
       font-weight: bold;
       margin-bottom: 10px;
       text-align: center;
-      color: #fff;
+      color: #fff; /* White text for contrast against gray background */
     }
+    /* Styling for the game board grid */
     #game-board {
       display: grid;
       gap: 1px;
@@ -45,9 +51,10 @@
       border-right-color: #d3d3d3;
       border-bottom-color: #d3d3d3;
     }
+    /* Base styling for individual cells */
     .cell {
-      background-color: #000000;
-      border: 1px solid #003366;
+      background-color: #000000; /* Black background for unrevealed cells */
+      border: 1px solid #003366; /* Blue border matching Solitaire theme */
       display: flex;
       justify-content: center;
       align-items: center;
@@ -55,39 +62,47 @@
       font-family: 'Courier New', monospace;
       cursor: pointer;
       user-select: none;
-      color: #fff;
+      color: #fff; /* White text for visibility */
     }
+    /* Styling for revealed cells */
     .cell.revealed {
-      background-color: #ffffff;
+      background-color: #ffffff; /* White background for revealed cells */
       border: 1px solid #003366;
-      color: #000000;
+      color: #000000; /* Black text for contrast */
       cursor: default;
     }
+    /* Styling for cells with mines */
     .cell.mine {
-      background-color: #ff0000;
+      background-color: #ff0000; /* Red background for mines */
       border: 1px solid #003366;
     }
+    /* Styling for flagged cells */
     .cell.flagged {
       background-color: #000000;
     }
+    /* Styling for cells with question marks */
     .cell.question {
       background-color: #000000;
     }
+    /* Pseudo-element for mine icon */
     .cell.revealed.mine::before {
       content: '💣';
     }
+    /* Pseudo-element for flag icon */
     .cell.flagged::before {
       content: '🚩';
     }
+    /* Pseudo-element for question mark, centered with blue color */
     .cell.question::before {
       content: '?';
-      color: #003366;
+      color: #003366; /* Matches border color */
       display: flex;
       justify-content: center;
       align-items: center;
       width: 100%;
       height: 100%;
     }
+    /* Styling for game status message */
     #game-status {
       margin-top: 10px;
       font-size: 16px;
@@ -95,44 +110,52 @@
       text-align: center;
       color: #fff;
     }
+    /* Styling for buttons (restart, back, adjust) */
     #restart-btn, #back-btn, #adjust-btn {
       margin-top: 10px;
       padding: 10px 16px;
       font-size: 14px;
       font-family: 'MS Sans Serif', 'Arial', sans-serif;
-      background: linear-gradient(to bottom, #f2f2f2, #d9d9d9);
+      background: linear-gradient(to bottom, #f2f2f2, #d9d9d9); /* Gradient background */
       border: 1px solid #888;
       border-radius: 4px;
       box-shadow: inset 0 1px 0 #fff, 0 1px 2px rgba(0,0,0,0.2);
       cursor: pointer;
       color: #000000;
     }
+    /* Hover effect for buttons */
     #restart-btn:hover, #back-btn:hover, #adjust-btn:hover {
       background: linear-gradient(to bottom, #ffffff, #cfcfcf);
     }
+    /* Active effect for buttons */
     #restart-btn:active, #back-btn:active, #adjust-btn:active {
       background: linear-gradient(to bottom, #cfcfcf, #ffffff);
       box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
     }
+    /* Styling for settings panel */
     .settings {
       display: flex;
       flex-direction: column;
       align-items: flex-start;
       color: #fff;
     }
+    /* Header for settings panel */
     .settings-header {
       font-weight: bold;
       cursor: pointer;
       margin-bottom: 5px;
     }
+    /* Content area for settings inputs */
     .settings-content {
       display: none;
       flex-direction: column;
       gap: 5px;
     }
+    /* Active state for settings content */
     .settings-content.active {
       display: flex;
     }
+    /* Styling for input fields in settings */
     .settings input {
       padding: 5px;
       font-size: 14px;
@@ -143,35 +166,50 @@
   </style>
 </head>
 <body>
+  <!-- Main container holding game board and settings -->
   <div class="container">
     <div>
+      <!-- Game title -->
       <h1>Minesweeper</h1>
+      <!-- Game board grid -->
       <div id="game-board"></div>
+      <!-- Status message area -->
       <div id="game-status"></div>
+      <!-- Button to restart the game -->
       <button id="restart-btn">Restart Game</button>
+      <!-- Button to navigate back to calculator -->
       <button id="back-btn" onclick="window.location.href='http://www.protoncube.com/'">Back to Calculator</button>
     </div>
+    <!-- Settings panel -->
     <div class="settings">
+      <!-- Header to toggle settings visibility -->
       <div class="settings-header" onclick="toggleSettings()">Change Settings</div>
+      <!-- Collapsible content for settings inputs -->
       <div class="settings-content" id="settings-content">
+        <!-- Input for number of rows -->
         <label>Rows: <input type="number" id="rows-input" min="4" max="99" value="8"></label>
+        <!-- Input for number of columns -->
         <label>Cols: <input type="number" id="cols-input" min="4" max="99" value="8"></label>
+        <!-- Input for number of mines -->
         <label>Mines: <input type="number" id="mines-input" min="1" max="100" value="10"></label>
+        <!-- Button to apply settings changes -->
         <button id="adjust-btn" onclick="adjustGame()">Adjust</button>
       </div>
     </div>
   </div>
   <script>
+    // Global variables for game dimensions and state
     let ROWS = 8;
     let COLS = 8;
     let MINES = 10;
-    let board = [];
-    let revealedCount = 0;
-    let gameOver = false;
-    let startTime;
+    let board = []; // 2D array to represent the game board
+    let revealedCount = 0; // Counter for revealed non-mine cells
+    let gameOver = false; // Flag to track game end state
+    let startTime; // Timestamp to track game start
 
+    // Initialize the game board with mines and calculate adjacent mines
     function initializeBoard() {
-      startTime = Date.now();
+      startTime = Date.now(); // Record start time
       board = [];
       revealedCount = 0;
       gameOver = false;
@@ -201,6 +239,7 @@
       renderBoard();
     }
 
+    // Count adjacent mines for a given cell
     function countAdjacentMines(row, col) {
       let count = 0;
       for (let i = -1; i <= 1; i++) {
@@ -215,6 +254,7 @@
       return count;
     }
 
+    // Render the game board to the DOM
     function renderBoard() {
       const gameBoard = document.getElementById('game-board');
       gameBoard.style.gridTemplateColumns = `repeat(${COLS}, 30px)`;
@@ -246,6 +286,7 @@
       }
     }
 
+    // Handle left click to reveal a cell
     function handleClick(event) {
       if (gameOver) return;
       const row = parseInt(event.target.dataset.row);
@@ -256,6 +297,7 @@
       checkWin();
     }
 
+    // Handle right click to cycle through flag and question states
     function handleRightClick(event) {
       event.preventDefault();
       if (gameOver) return;
@@ -274,6 +316,7 @@
       }
     }
 
+    // Reveal a cell and handle recursive reveal for empty areas
     function revealCell(row, col) {
       if (row < 0 || row >= ROWS || col < 0 || col >= COLS || board[row][col].revealed || board[row][col].flagged || board[row][col].question) {
         return;
@@ -295,6 +338,7 @@
       }
     }
 
+    // Reveal all mines when game is lost
     function revealAllMines() {
       for (let i = 0; i < ROWS; i++) {
         for (let j = 0; j < COLS; j++) {
@@ -305,6 +349,7 @@
       }
     }
 
+    // Check if the player has won and display popup with rank
     function checkWin() {
       if (revealedCount === ROWS * COLS - MINES && !gameOver) {
         gameOver = true;
@@ -326,11 +371,13 @@
       }
     }
 
+    // Toggle visibility of settings panel
     function toggleSettings() {
       const content = document.getElementById('settings-content');
       content.classList.toggle('active');
     }
 
+    // Adjust game settings based on user input
     function adjustGame() {
       const rows = parseInt(document.getElementById('rows-input').value);
       const cols = parseInt(document.getElementById('cols-input').value);
@@ -346,6 +393,7 @@
       }
     }
 
+    // Add event listener for restart button
     document.getElementById('restart-btn').addEventListener('click', initializeBoard);
     initializeBoard();
   </script>
