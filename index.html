@@ -13,7 +13,6 @@
             flex-direction: column;
             align-items: center;
         }
-
         #headerImage {
             max-width: 250px;
             height: auto;
@@ -23,20 +22,19 @@
             border: 2px dashed #ccc;
             padding: 5px;
         }
-
         input[type="file"] {
             display: none;
         }
-
         .calculator {
+            position: relative;
             background-color: #f2f2f2; /* Light grey background */
             padding: 30px;
             border-radius: 15px; /* Soft edges */
             box-shadow: 0 4px 12px rgba(0,0,0,0.1); /* Subtle shadow */
             text-align: center;
             width: 320px;
+            border: 1px solid navy;
         }
-
         input, button {
             padding: 10px;
             margin: 8px 0;
@@ -44,42 +42,109 @@
             width: 100%;
             box-sizing: border-box;
             border-radius: 6px;
-            border: 1px solid #000; /* Black border for inputs */
+            border: 1px solid navy; /* Changed to dark blue */
         }
-
         button {
             background-color: #333; /* Dark grey button */
             color: white;
-            border: none;
+            border: 1px solid navy;
             cursor: pointer;
         }
-
         button:hover {
             background-color: #555; /* Lighter grey on hover */
         }
-
-        /* Play button style - 1/4 width of normal button */
-        #playButton {
-            width: 25%;
+        .smallButton {
+            width: 48%;
             font-size: 14px;
             padding: 6px;
-            margin-top: 5px;
         }
-
         #resetImage {
             font-size: 12px;
             padding: 4px 8px;
             width: auto;
             background-color: #e74c3c;
             color: white;
-            border: none;
+            border: 1px solid navy;
             border-radius: 5px;
             margin-bottom: 10px;
         }
-
         #result {
             margin-top: 15px;
             font-weight: bold;
+        }
+        body.dark {
+            background-color: #333;
+            color: #f4f4f4;
+        }
+        .calculator.dark {
+            background-color: #444;
+            box-shadow: 0 4px 12px rgba(255,255,255,0.1);
+        }
+        #settingsModal {
+            background: white;
+            padding: 15px;
+            border: 1px solid navy;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+        #settingsModal.dark {
+            background: #555;
+            color: #f4f4f4;
+        }
+        body.dark input[type="time"],
+        body.dark input[type="number"] {
+            background-color: #555;
+            color: #fff;
+            border-color: navy;
+        }
+        body.dark button {
+            background-color: #222;
+            color: #fff;
+            border-color: navy;
+        }
+        body.dark button:hover {
+            background-color: #444;
+        }
+        body.dark #resetImage {
+            background-color: #c0392b;
+            border-color: navy;
+        }
+        body.dark #headerImage {
+            border-color: #555;
+        }
+        body.dark .calculator h2,
+        body.dark .calculator label {
+            color: #fff;
+        }
+        body.dark #result {
+            color: #ddd;
+        }
+        body.dark #settingsModal label {
+            color: #fff;
+        }
+        body.dark #settingsModal input[type="checkbox"] {
+            accent-color: #007bff; /* Blue for checkboxes in dark mode */
+        }
+        #settingsButton {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: auto;
+            padding: 5px 10px;
+            font-size: 20px;
+            background: none;
+            border: none;
+            color: #333;
+            cursor: pointer;
+        }
+        body.dark #settingsButton {
+            color: #fff;
+        }
+        #settingsButton:hover {
+            color: #555;
+        }
+        body.dark #settingsButton:hover {
+            color: #ddd;
         }
     </style>
 </head>
@@ -89,37 +154,38 @@
     </label>
     <input type="file" id="imageUpload" accept="image/*">
     <button id="resetImage">Reset Image</button>
-
     <div class="calculator">
+        <button id="settingsButton">⚙️</button>
         <h2>Clock-Out Time Calculator</h2>
         <label for="clockIn">Clock-In Time (HH:MM, 24-hour):</label>
         <input type="time" id="clockIn" placeholder="--:-- --">
-
         <label for="lunch">Lunch Duration (minutes):</label>
         <input type="number" id="lunch" value="30">
-
+        <label for="workHours" id="workHoursLabel" style="display: none;">Work Hours:</label>
+        <input type="number" id="workHours" value="8" step="0.5" style="display: none;">
         <button onclick="calculateClockOut()">Calculate</button>
-
         <!-- Button Row -->
         <div style="display: flex; justify-content: space-between; gap: 5px; margin-top: 5px;">
             <button class="smallButton" onclick="window.location.href='https://www.protoncube.com/solitaire.html'">Play</button>
             <button class="smallButton" onclick="window.location.href='https://www.protoncube.com/MindSweeper.html'">Mind</button>
         </div>
-
         <div id="result"></div>
+        <div id="settingsModal" style="display: none;">
+            <h3>Settings</h3>
+            <label><input type="checkbox" id="darkMode"> Enable Dark Mode</label><br>
+            <label><input type="checkbox" id="customHours"> Use Custom Work Hours</label><br>
+            <label><input type="checkbox" id="use24Hour"> Use 24-Hour Format</label><br>
+        </div>
     </div>
-
     <script>
         const imageUpload = document.getElementById("imageUpload");
         const headerImage = document.getElementById("headerImage");
         const resetImage = document.getElementById("resetImage");
-
         // Load image from localStorage if available
         const savedImage = localStorage.getItem("headerImage");
         if (savedImage) {
             headerImage.src = savedImage;
         }
-
         imageUpload.addEventListener("change", function() {
             const file = this.files[0];
             if (file) {
@@ -131,38 +197,84 @@
                 reader.readAsDataURL(file);
             }
         });
-
         resetImage.addEventListener("click", function() {
             headerImage.src = "";
             localStorage.removeItem("headerImage");
         });
-
+        const settingsButton = document.getElementById('settingsButton');
+        const settingsModal = document.getElementById('settingsModal');
+        const darkModeToggle = document.getElementById('darkMode');
+        const customHoursToggle = document.getElementById('customHours');
+        const use24HourToggle = document.getElementById('use24Hour');
+        // Load saved settings
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark');
+            document.querySelector('.calculator').classList.add('dark');
+            settingsModal.classList.add('dark');
+            darkModeToggle.checked = true;
+        }
+        if (localStorage.getItem('customHours') === 'true') {
+            document.getElementById('workHours').style.display = 'block';
+            document.getElementById('workHoursLabel').style.display = 'block';
+            customHoursToggle.checked = true;
+        }
+        if (localStorage.getItem('use24Hour') === 'true') {
+            use24HourToggle.checked = true;
+        }
+        settingsButton.addEventListener('click', () => {
+            if (settingsModal.style.display === 'block') {
+                saveSettings();
+            } else {
+                settingsModal.style.display = 'block';
+            }
+        });
+        function saveSettings() {
+            const isDark = darkModeToggle.checked;
+            const isCustom = customHoursToggle.checked;
+            const is24Hour = use24HourToggle.checked;
+            localStorage.setItem('darkMode', isDark);
+            localStorage.setItem('customHours', isCustom);
+            localStorage.setItem('use24Hour', is24Hour);
+            if (isDark) {
+                document.body.classList.add('dark');
+                document.querySelector('.calculator').classList.add('dark');
+                settingsModal.classList.add('dark');
+            } else {
+                document.body.classList.remove('dark');
+                document.querySelector('.calculator').classList.remove('dark');
+                settingsModal.classList.remove('dark');
+            }
+            document.getElementById('workHours').style.display = isCustom ? 'block' : 'none';
+            document.getElementById('workHoursLabel').style.display = isCustom ? 'block' : 'none';
+            settingsModal.style.display = 'none';
+        }
         function calculateClockOut() {
             const clockIn = document.getElementById('clockIn').value;
             const lunch = parseInt(document.getElementById('lunch').value) || 0;
-
+            const workHours = parseFloat(document.getElementById('workHours').value) || 8;
+            const use24Hour = localStorage.getItem('use24Hour') === 'true';
             if (!clockIn) {
                 document.getElementById('result').innerText = "Please enter a valid clock-in time.";
                 return;
             }
-
             const [hours, minutes] = clockIn.split(':').map(Number);
             const startDate = new Date();
-            startDate.setHours(hours, minutes);
-
-            const totalMinutes = 8 * 60 + lunch;
+            startDate.setHours(hours, minutes, 0, 0);
+            const totalMinutes = workHours * 60 + lunch;
             const endDate = new Date(startDate.getTime() + totalMinutes * 60000);
-
             let endHours = endDate.getHours();
-            const ampm = endHours >= 12 ? 'PM' : 'AM';
-            endHours = endHours % 12 || 12;
-            const endMinutes = endDate.getMinutes().toString().padStart(2, '0');
-
-            document.getElementById('result').innerText = `You should clock out at ${endHours}:${endMinutes} ${ampm}`;
+            let endMinutes = endDate.getMinutes().toString().padStart(2, '0');
+            let displayTime;
+            if (use24Hour) {
+                displayTime = `${endHours.toString().padStart(2, '0')}:${endMinutes}`;
+            } else {
+                const ampm = endHours >= 12 ? 'PM' : 'AM';
+                endHours = endHours % 12 || 12;
+                displayTime = `${endHours}:${endMinutes} ${ampm}`;
+            }
+            document.getElementById('result').innerText = `You should clock out at ${displayTime}`;
         }
     </script>
 </body>
 </html>
-
-
-
+```
