@@ -9,23 +9,29 @@
   :root{
     --pile-w: clamp(60px, 11vw, 100px);
     --pile-h: calc(var(--pile-w) * 1.4);
-    --stack-gap: 20px;
+    --stack-gap: 10px;
+    --bg-color: #808080;
+    --card-back: #000;
+    --card-front: #fff;
+    --border-color: #003366;
+    --text-color: #fff;
   }
 
   * { box-sizing: border-box; }
   html, body { height: 100%; }
   body {
     margin: 0;
-    background: #808080;
+    background: var(--bg-color);
     font-family: Arial, sans-serif;
     display: flex;
     flex-direction: column;
     align-items: stretch;
     overscroll-behavior: none;
+    color: var(--text-color);
   }
 
   h1 {
-    color: #fff;
+    color: var(--text-color);
     margin: 16px 0 6px;
     text-align: center;
     font-weight: 700;
@@ -43,42 +49,23 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 10px;
+    gap: var(--stack-gap);
     margin-bottom: 12px;
   }
 
   .top-row {
     display: flex;
-    gap: 10px;
-    flex-wrap: nowrap;
-    justify-content: flex-start;
+    gap: var(--stack-gap);
+    flex-wrap: wrap;
+    justify-content: center;
     flex: 1 1 auto;
-  }
-
-  .stock-waste {
-    display: flex;
-    gap: 10px;
-  }
-
-  .foundations {
-    display: flex;
-    gap: 10px;
-    margin-left: auto;
-  }
-
-  .right-side {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 6px;
   }
 
   .controls {
     display: flex;
     gap: 6px;
     flex: 0 0 auto;
-    flex-wrap: wrap;
-    justify-content: flex-end;
+    align-items: center;
   }
 
   .piles-group { display: contents; }
@@ -87,21 +74,18 @@
     width: var(--pile-w);
     height: var(--pile-h);
     border: 2px solid #d3d3d3;
-    background: #808080;
+    background: var(--bg-color);
     position: relative;
     border-style: solid;
     flex-shrink: 0;
   }
-
-  #waste { width: calc(var(--pile-w) + 40px); }
-
   .foundation, .tableau { border-style: dashed; }
 
   .card {
     width: calc(100% - 10px);
     height: calc(100% - 14px);
-    border: 1px solid #003366;
-    background: #fff;
+    border: 1px solid var(--border-color);
+    background: var(--card-front);
     position: absolute;
     left: 5px;
     top: 5px;
@@ -116,7 +100,7 @@
   }
   .card.red { color: red; }
   .card.face-down {
-    background: #000;
+    background: var(--card-back);
     color: #fff;
     cursor: default;
   }
@@ -124,9 +108,9 @@
 
   #tableau-row {
     display: flex;
-    gap: 10px;
-    flex-wrap: nowrap;
-    justify-content: space-between;
+    gap: var(--stack-gap);
+    flex-wrap: wrap;
+    justify-content: center;
   }
 
   button {
@@ -180,38 +164,32 @@
     to { transform: rotate(360deg); }
   }
 
-  .stats {
-    color: #fff;
-    text-align: right;
-    font-size: clamp(12px, 2.5vw, 16px);
-    flex: 0 0 auto;
-    white-space: nowrap;
+  #settings-panel {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    padding: 20px;
+    border: 1px solid #000;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    z-index: 1000;
+    color: #000;
+  }
+  #settings-panel.visible {
+    display: block;
   }
 
-  @media (max-width: 800px) {
+  @media (max-width: 700px) {
     .top-bar {
       flex-direction: column;
-      align-items: stretch;
+      align-items: center;
       gap: 12px;
     }
-    .top-row {
-      justify-content: space-between;
-    }
-    .foundations {
-      margin-left: 0;
-    }
-    .right-side {
-      align-items: center;
-    }
-    .controls {
-      justify-content: center;
-    }
-    .stats {
-      text-align: center;
-    }
-    #tableau-row {
-      justify-content: center;
-      flex-wrap: wrap;
+    .controls { order: 2; }
+    :root {
+      --pile-w: clamp(40px, 13vw, 80px);
     }
   }
 </style>
@@ -223,28 +201,23 @@
   <div class="board">
     <div class="top-bar">
       <div class="top-row">
-        <div class="stock-waste">
+        <div class="piles-group">
           <div id="stock" class="pile" onclick="drawCard()">
             <div id="reshuffle-circle">↻</div>
             <div id="stock-card"></div>
           </div>
           <div id="waste" class="pile"></div>
-        </div>
-        <div class="foundations">
           <div id="foundation1" class="pile foundation"></div>
           <div id="foundation2" class="pile foundation"></div>
           <div id="foundation3" class="pile foundation"></div>
           <div id="foundation4" class="pile foundation"></div>
         </div>
       </div>
-      <div class="right-side">
-        <div id="stats" class="stats">Moves: 0 Time: 0:00</div>
-        <div class="controls">
-          <button onclick="newGame()">New Game</button>
-          <button onclick="undo()">Undo</button>
-          <button onclick="openSettings()">Settings</button>
-          <button onclick="window.location.href='http://www.protoncube.com/'">Back to Calculator</button>
-        </div>
+      <div class="controls">
+        <button onclick="newGame()">New Game</button>
+        <button onclick="window.location.href='http://www.protoncube.com/'">Back to Calculator</button>
+        <button onclick="toggleSettings()">Settings</button>
+        <button onclick="undoMove()">Undo</button>
       </div>
     </div>
 
@@ -259,46 +232,46 @@
     </div>
   </div>
 
-  <div id="settings-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
-    <div style="background:#fff; padding:20px; border-radius:8px; width:80%; max-width:400px;">
-      <h2>Settings</h2>
-      <div>
-        <p>Draw cards:</p>
-        <label><input type="radio" name="drawNum" value="1" checked> 1 card</label><br>
-        <label><input type="radio" name="drawNum" value="3"> 3 cards</label>
-      </div>
-      <div>
-        <p>Auto-complete:</p>
-        <label><input type="checkbox" id="autoCompleteCheck" checked> Enabled</label>
-      </div>
-      <div>
-        <p>Auto-move on click:</p>
-        <label><input type="checkbox" id="autoMoveCheck" checked> Enabled</label>
-      </div>
-      <div style="margin-top:20px; display:flex; justify-content:space-between;">
-        <button onclick="applySettings()">Apply and New Game</button>
-        <button onclick="closeSettings()">Cancel</button>
-      </div>
-    </div>
+  <div id="settings-panel">
+    <h2>Settings</h2>
+    <label>Draw Count:
+      <select id="draw-select">
+        <option value="1">Draw 1</option>
+        <option value="3" selected>Draw 3</option>
+      </select>
+    </label><br>
+    <label>Card Size:
+      <select id="size-select">
+        <option value="small">Small</option>
+        <option value="medium" selected>Medium</option>
+        <option value="large">Large</option>
+      </select>
+    </label><br>
+    <label>Theme:
+      <select id="theme-select">
+        <option value="classic" selected>Classic</option>
+        <option value="dark">Dark</option>
+        <option value="green">Green Felt</option>
+      </select>
+    </label><br>
+    <label>Auto Move to Foundation:
+      <input type="checkbox" id="auto-move-check" checked>
+    </label><br>
+    <button onclick="autoComplete()">Auto Complete</button><br>
+    <button onclick="toggleSettings()">Close</button>
   </div>
 
 <script>
-// JavaScript Data
+<!-- JavaScript Data -->
 const suits = ['♠', '♣', '♥', '♦'];
 const ranks = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
 let deck = [], stock = [], waste = [], foundations = [[],[],[],[]], tableau = [[],[],[],[],[],[],[]];
+let moveHistory = [];
 
 let touchDragData = null;
 let lastTapTime = 0;
-let drawNum = 1;
-let autoCompleteEnabled = true;
-let autoMoveEnabled = true;
-let history = [];
-let moves = 0;
-let timer = 0;
-let interval = null;
 
-// JavaScript Setup Functions
+<!-- JavaScript Setup Functions -->
 function createDeck(){
   deck = [];
   for (let suit of suits){
@@ -327,11 +300,15 @@ function dealCards(){
     }
   }
   stock = deckCopy;
+  moveHistory = [];
   renderWithBindings();
 }
 
-// JavaScript Rendering Functions
+<!-- JavaScript Rendering Functions -->
 function render(){
+  const drawSelect = document.getElementById('draw-select');
+  const drawCount = drawSelect ? parseInt(drawSelect.value) : 1;
+
   // Stock
   const stockCardEl = document.getElementById('stock-card');
   stockCardEl.innerHTML = stock.length ? '<div class="card face-down"></div>' : '';
@@ -341,14 +318,15 @@ function render(){
   // Waste
   const wasteEl = document.getElementById('waste');
   wasteEl.innerHTML = '';
-  const showCount = Math.min(3, waste.length);
-  const showStart = waste.length - showCount;
-  for (let i = showStart; i < waste.length; i++) {
-    const el = createCardElement(waste[i], 'waste', i);
-    el.style.left = `${(i - showStart) * 20}px`;
+  const visibleCount = drawCount === 1 ? 1 : 3;
+  const visibleWaste = waste.slice(-visibleCount);
+  visibleWaste.forEach((card, idx) => {
+    const globalIndex = waste.length - visibleWaste.length + idx;
+    const el = createCardElement(card, 'waste', globalIndex);
     el.style.top = '5px';
+    el.style.left = `${5 + idx * (visibleCount > 1 ? 20 : 0)}px`; // Fan only if >1
     wasteEl.appendChild(el);
-  }
+  });
 
   // Foundations
   for (let i = 0; i < 4; i++){
@@ -374,22 +352,20 @@ function render(){
 function createCardElement(card, pileId, index){
   const div = document.createElement('div');
   div.className = 'card' + (card.faceUp ? '' : ' face-down');
+  const pileArr = getPileArray(pileId);
 
   if (card.faceUp){
     div.textContent = `${card.rank}${card.suit}`;
     div.classList.add(card.color);
 
-    const pileArr = getPileArray(pileId);
-    if (pileId === 'waste' && index !== pileArr.length - 1) {
-      div.draggable = false;
-      div.style.cursor = 'default';
-    } else {
+    const isDraggable = pileId.startsWith('foundation') || (pileId.startsWith('tableau') && index >= pileArr.length - 1 - (pileArr.slice(index).length - 1)) || (pileId === 'waste' && index === pileArr.length - 1);
+    if (isDraggable) {
       div.draggable = true;
       div.addEventListener('dragstart', e => dragStart(e, pileId, index));
     }
 
     const isLast = index === pileArr.length - 1 && (pileId === 'waste' || pileId.startsWith('tableau'));
-    if (isLast && autoMoveEnabled){
+    if (isLast){
       div.addEventListener('click', () => autoMoveToFoundation(pileId, index));
     }
 
@@ -404,14 +380,9 @@ function createCardElement(card, pileId, index){
 function renderWithBindings(){
   render();
   attachPileDropTargets();
-  updateStats();
 }
 
-function updateStats() {
-  document.getElementById('stats').innerHTML = `Moves: ${moves} Time: ${Math.floor(timer / 60)}:${(timer % 60).toString().padStart(2, '0')}`;
-}
-
-// JavaScript Drag-and-Drop Handling
+<!-- JavaScript Drag-and-Drop Handling -->
 function isValidSequence(cards){
   for (let k = 1; k < cards.length; k++){
     if (ranks.indexOf(cards[k].rank) !== ranks.indexOf(cards[k - 1].rank) - 1) return false;
@@ -421,14 +392,14 @@ function isValidSequence(cards){
 }
 
 function dragStart(e, pileId, index){
-  if (pileId.startsWith('foundation')) {
-    e.preventDefault();
-    return;
-  }
   const src = getPileArray(pileId);
   const moving = src.slice(index);
 
   if (pileId.startsWith('tableau') && moving.length > 1 && !isValidSequence(moving)){
+    e.preventDefault();
+    return;
+  }
+  if (pileId === 'waste' && index !== src.length - 1) {
     e.preventDefault();
     return;
   }
@@ -444,15 +415,16 @@ function attachPileDropTargets(){
   });
 }
 
-// JavaScript Touch Handling
+<!-- JavaScript Touch Handling -->
 function handleCardTouchStart(e, pileId, index){
-  if (!getPileArray(pileId)[index].faceUp) return;
-  if (pileId.startsWith('foundation')) return;
+  const pileArr = getPileArray(pileId);
+  if (!pileArr[index].faceUp) return;
+  if (pileId === 'waste' && index !== pileArr.length - 1) return;
   e.preventDefault();
 
   const now = Date.now();
   if (now - lastTapTime < 300){
-    if (autoMoveEnabled) autoMoveToFoundation(pileId, index);
+    autoMoveToFoundation(pileId, index);
     lastTapTime = 0;
     return;
   }
@@ -461,7 +433,6 @@ function handleCardTouchStart(e, pileId, index){
   const src = getPileArray(pileId);
   const moving = src.slice(index);
   if (pileId.startsWith('tableau') && moving.length > 1 && !isValidSequence(moving)) return;
-  if (pileId === 'waste' && index !== src.length - 1) return;
 
   touchDragData = { pileId, index };
 
@@ -477,8 +448,8 @@ function handleCardTouchStart(e, pileId, index){
     mini.style.position = 'absolute';
     mini.style.left = '0';
     mini.style.top = `${i * 20}px`;
-    mini.style.width = `calc(${getComputedStyle(document.querySelector('.pile')).width} - 10px)`;
-    mini.style.height = `calc(${getComputedStyle(document.querySelector('.pile')).height} - 14px)`;
+    mini.style.width = `calc(var(--pile-w) - 10px)`;
+    mini.style.height = `calc(var(--pile-h) - 14px)`;
     ghost.appendChild(mini);
   });
   document.body.appendChild(ghost);
@@ -517,7 +488,7 @@ function handleTouchEnd(e){
   document.removeEventListener('touchend', handleTouchEnd);
 }
 
-// JavaScript Game Logic
+<!-- JavaScript Game Logic -->
 function getPileArray(id){
   if (id === 'waste') return waste;
   if (id.startsWith('foundation')) return foundations[parseInt(id[10]) - 1];
@@ -541,6 +512,23 @@ function isValidMove(targetId, movingCard, targetPile){
   return false;
 }
 
+function saveState() {
+  return {
+    stock: stock.map(c => ({...c})),
+    waste: waste.map(c => ({...c})),
+    foundations: foundations.map(f => f.map(c => ({...c}))),
+    tableau: tableau.map(t => t.map(c => ({...c})))
+  };
+}
+
+function loadState(state) {
+  stock = state.stock;
+  waste = state.waste;
+  foundations = state.foundations;
+  tableau = state.tableau;
+  renderWithBindings();
+}
+
 function drop(e, targetPileId){
   e.preventDefault();
 
@@ -558,7 +546,8 @@ function drop(e, targetPileId){
   const sourcePile = getPileArray(pileId);
   const targetPile = getPileArray(targetPileId);
   if (!sourcePile || !targetPile) return;
-  if (targetPileId === 'stock' || targetPileId === 'waste') return;
+
+  const prevState = saveState();
 
   let movingCards = sourcePile.slice(index);
 
@@ -569,46 +558,48 @@ function drop(e, targetPileId){
   }
 
   if (isValidMove(targetPileId, movingCards[0], targetPile)){
-    history.push(deepCopyState());
-    moves++;
     sourcePile.splice(index, movingCards.length);
     targetPile.push(...movingCards);
 
     if (pileId.startsWith('tableau') && sourcePile.length > 0 && !sourcePile[sourcePile.length - 1].faceUp){
       sourcePile[sourcePile.length - 1].faceUp = true;
     }
+    moveHistory.push(prevState);
     renderWithBindings();
     checkWin();
+    if (document.getElementById('auto-move-check').checked) {
+      autoComplete();
+    }
   }
 }
 
 function drawCard(){
-  console.log('drawCard called, stock length:', stock.length, 'waste length:', waste.length);
+  const drawSelect = document.getElementById('draw-select');
+  const drawCount = drawSelect ? parseInt(drawSelect.value) : 1;
+
+  const prevState = saveState();
+
   if (stock.length > 0){
-    history.push(deepCopyState());
-    moves++;
-    for (let i = 0; i < drawNum && stock.length > 0; i++) {
+    const toDraw = Math.min(drawCount, stock.length);
+    for (let i = 0; i < toDraw; i++) {
       const card = stock.pop();
       card.faceUp = true;
       waste.push(card);
-      console.log('Drew card:', card);
     }
   } else if (waste.length > 0){
-    history.push(deepCopyState());
-    moves++;
     const reshuffleCircle = document.getElementById('reshuffle-circle');
     reshuffleCircle.classList.add('spin');
     setTimeout(() => reshuffleCircle.classList.remove('spin'), 500);
     stock = waste.reverse().map(c => ({ ...c, faceUp: false }));
     waste = [];
-    console.log('Reshuffled, new stock length:', stock.length);
-  } else if (isAllFaceUp() && autoCompleteEnabled){
-    history.push(deepCopyState());
-    moves++;
-    console.log('All face up, running autoComplete');
+  } else if (isAllFaceUp()){
     autoComplete();
   }
+  moveHistory.push(prevState);
   renderWithBindings();
+  if (document.getElementById('auto-move-check').checked) {
+    autoComplete();
+  }
 }
 
 function isAllFaceUp(){
@@ -619,12 +610,13 @@ function autoComplete(){
   let moved;
   do {
     moved = false;
+    const prevState = saveState();
     if (waste.length > 0){
       const card = waste[waste.length - 1];
       for (let i = 0; i < 4; i++){
         const f = foundations[i];
         if (isValidMove(`foundation${i + 1}`, card, f)){
-          waste.pop(); f.push(card); moved = true; break;
+          waste.pop(); f.push(card); moved = true; moveHistory.push(prevState); break;
         }
       }
     }
@@ -635,7 +627,7 @@ function autoComplete(){
         for (let i = 0; i < 4; i++){
           const f = foundations[i];
           if (isValidMove(`foundation${i + 1}`, card, f)){
-            t.pop(); f.push(card); moved = true; break;
+            t.pop(); f.push(card); moved = true; moveHistory.push(prevState); break;
           }
         }
       }
@@ -649,18 +641,21 @@ function autoMoveToFoundation(pileId, index){
   const sourcePile = getPileArray(pileId);
   if (!sourcePile || index !== sourcePile.length - 1) return;
   const card = sourcePile[index];
+  const prevState = saveState();
   for (let i = 0; i < 4; i++){
     const f = foundations[i];
     if (isValidMove(`foundation${i + 1}`, card, f)){
-      history.push(deepCopyState());
-      moves++;
       sourcePile.pop();
       f.push(card);
       if (pileId.startsWith('tableau') && sourcePile.length > 0 && !sourcePile[sourcePile.length - 1].faceUp){
         sourcePile[sourcePile.length - 1].faceUp = true;
       }
+      moveHistory.push(prevState);
       renderWithBindings();
       checkWin();
+      if (document.getElementById('auto-move-check').checked) {
+        autoComplete();
+      }
       return;
     }
   }
@@ -671,60 +666,81 @@ function checkWin(){
   if (total === 52) alert('Congratulations! You won!');
 }
 
-function deepCopyState() {
-  return {
-    stock: stock.map(c => ({...c})),
-    waste: waste.map(c => ({...c})),
-    foundations: foundations.map(f => f.map(c => ({...c}))),
-    tableau: tableau.map(t => t.map(c => ({...c})))
-  };
+function undoMove() {
+  if (moveHistory.length > 0) {
+    loadState(moveHistory.pop());
+  }
 }
 
-function undo() {
-  if (history.length === 0) return;
-  const prev = history.pop();
-  stock = prev.stock;
-  waste = prev.waste;
-  foundations = prev.foundations;
-  tableau = prev.tableau;
+function toggleSettings() {
+  const panel = document.getElementById('settings-panel');
+  panel.classList.toggle('visible');
+}
+
+function updatePileSize(size) {
+  const root = document.documentElement;
+  switch (size) {
+    case 'small':
+      root.style.setProperty('--pile-w', 'clamp(50px, 9vw, 80px)');
+      break;
+    case 'large':
+      root.style.setProperty('--pile-w', 'clamp(80px, 13vw, 120px)');
+      break;
+    case 'medium':
+    default:
+      root.style.setProperty('--pile-w', 'clamp(60px, 11vw, 100px)');
+      break;
+  }
+  root.style.setProperty('--pile-h', 'calc(var(--pile-w) * 1.4)');
   renderWithBindings();
 }
 
-function openSettings() {
-  document.getElementById('settings-modal').style.display = 'flex';
-  const radios = document.querySelectorAll('input[name="drawNum"]');
-  for (let r of radios) {
-    if (parseInt(r.value) === drawNum) r.checked = true;
+function updateTheme(theme) {
+  const root = document.documentElement;
+  switch (theme) {
+    case 'dark':
+      root.style.setProperty('--bg-color', '#333');
+      root.style.setProperty('--card-back', '#555');
+      root.style.setProperty('--card-front', '#222');
+      root.style.setProperty('--text-color', '#ddd');
+      root.style.setProperty('--border-color', '#666');
+      break;
+    case 'green':
+      root.style.setProperty('--bg-color', '#006400');
+      root.style.setProperty('--card-back', '#004d00');
+      root.style.setProperty('--card-front', '#fff');
+      root.style.setProperty('--text-color', '#fff');
+      root.style.setProperty('--border-color', '#003300');
+      break;
+    case 'classic':
+    default:
+      root.style.setProperty('--bg-color', '#808080');
+      root.style.setProperty('--card-back', '#000');
+      root.style.setProperty('--card-front', '#fff');
+      root.style.setProperty('--text-color', '#fff');
+      root.style.setProperty('--border-color', '#003366');
+      break;
   }
-  document.getElementById('autoCompleteCheck').checked = autoCompleteEnabled;
-  document.getElementById('autoMoveCheck').checked = autoMoveEnabled;
-}
-
-function closeSettings() {
-  document.getElementById('settings-modal').style.display = 'none';
-}
-
-function applySettings() {
-  drawNum = parseInt(document.querySelector('input[name="drawNum"]:checked').value);
-  autoCompleteEnabled = document.getElementById('autoCompleteCheck').checked;
-  autoMoveEnabled = document.getElementById('autoMoveCheck').checked;
-  closeSettings();
-  newGame();
+  renderWithBindings();
 }
 
 function newGame(){
-  if (interval) clearInterval(interval);
-  timer = 0;
-  moves = 0;
-  history = [];
-  updateStats();
-  interval = setInterval(() => { timer++; updateStats(); }, 1000);
   createDeck();
   dealCards();
+  const sizeSelect = document.getElementById('size-select');
+  updatePileSize(sizeSelect.value);
+  const themeSelect = document.getElementById('theme-select');
+  updateTheme(themeSelect.value);
 }
 
-// JavaScript Boot Process
-newGame();
+<!-- JavaScript Boot Process -->
+document.addEventListener('DOMContentLoaded', () => {
+  const sizeSelect = document.getElementById('size-select');
+  sizeSelect.addEventListener('change', (e) => updatePileSize(e.target.value));
+  const themeSelect = document.getElementById('theme-select');
+  themeSelect.addEventListener('change', (e) => updateTheme(e.target.value));
+  newGame();
+});
 </script>
 </body>
 </html>
