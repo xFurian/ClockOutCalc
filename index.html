@@ -1,7 +1,381 @@
 This Website is hosted on GitHub and was built by Aaron Draheim.
 <!DOCTYPE html>
 <html lang="en">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Clock-Out Time Calculator | ProtonCube</title><style>:root{--bg:#eef3fb;--surface:#ffffff;--text:#172033;--muted:#5d6b82;--primary:#1f5eff;--primary-dark:#1647c7;--border:#d9e2f2;--shadow:0 24px 60px rgba(23,32,51,.14);--radius:22px}*{box-sizing:border-box}body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:radial-gradient(circle at top left,#dbe8ff,transparent 34%),linear-gradient(135deg,#f7faff 0%,#eef3fb 100%);color:var(--text);min-height:100vh}body.dark{--bg:#111827;--surface:#1f2937;--text:#f9fafb;--muted:#cbd5e1;--primary:#7aa2ff;--primary-dark:#9bb9ff;--border:#374151;background:linear-gradient(135deg,#0b1120,#111827)}.page{width:min(1120px,92vw);margin:0 auto;padding:48px 0}.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:36px;align-items:center}.eyebrow{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid var(--border);border-radius:999px;background:rgba(255,255,255,.72);color:var(--muted);font-size:14px;font-weight:700}body.dark .eyebrow{background:rgba(31,41,55,.72)}h1{font-size:clamp(42px,6vw,72px);line-height:.95;margin:22px 0 18px;letter-spacing:-2px}.lead{font-size:20px;line-height:1.65;color:var(--muted);max-width:670px}.hero-actions{display:flex;flex-wrap:wrap;gap:14px;margin-top:26px}.btn{border:0;border-radius:14px;padding:14px 18px;font-weight:800;font-size:15px;cursor:pointer;transition:.2s ease;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px}.btn-primary{background:var(--primary);color:#fff}.btn-primary:hover{background:var(--primary-dark);transform:translateY(-1px)}.btn-secondary{background:var(--surface);color:var(--text);border:1px solid var(--border)}.card{background:rgba(255,255,255,.82);backdrop-filter:blur(18px);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}body.dark .card{background:rgba(31,41,55,.88)}.calculator{padding:28px}.calculator-header{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;margin-bottom:20px}.calculator h2{margin:0;font-size:26px}.calculator p{margin:6px 0 0;color:var(--muted);line-height:1.5}.settings-button{width:auto;border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:12px;padding:10px 12px;font-size:18px;cursor:pointer}.field{margin:16px 0}.field label{display:block;font-weight:800;margin-bottom:8px}.field input{width:100%;padding:13px 14px;border:1px solid var(--border);border-radius:12px;background:var(--surface);color:var(--text);font-size:16px}.result{margin-top:18px;padding:18px;border-radius:16px;background:#edf4ff;color:#0f326d;font-size:18px;font-weight:900;text-align:center}body.dark .result{background:#172554;color:#dbeafe}.settings{display:none;margin-top:16px;padding:16px;border-radius:16px;border:1px solid var(--border);background:rgba(255,255,255,.6)}body.dark .settings{background:rgba(17,24,39,.7)}.settings.open{display:block}.settings label{display:flex;align-items:center;gap:10px;margin:10px 0;color:var(--text);font-weight:700}.logo-panel{margin-bottom:18px;padding:18px;text-align:center}.logo-panel img{max-width:210px;max-height:120px;display:none;margin:0 auto 12px;border-radius:16px;border:1px dashed var(--border);padding:10px}.logo-panel img[src]{display:block}.logo-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}.file-input{display:none}.secondary-links{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:14px}.feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:38px}.feature{padding:22px}.feature h3{margin:0 0 8px;font-size:18px}.feature p{margin:0;color:var(--muted);line-height:1.55}.footer{margin-top:38px;text-align:center;color:var(--muted);font-size:14px}@media(max-width:860px){.hero{grid-template-columns:1fr}.feature-grid{grid-template-columns:1fr}h1{letter-spacing:-1px}.page{padding:28px 0}}</style></head>
-<body><main class="page"><section class="hero"><div><span class="eyebrow">Simple schedule planning, built for daily use</span><h1>Know exactly when your workday ends.</h1><p class="lead">Enter your clock-in time, lunch duration, and workday length to instantly calculate your target clock-out time. Fast, clean, and easy to use on desktop or mobile.</p><div class="hero-actions"><a class="btn btn-primary" href="#calculator">Calculate clock-out time</a><a class="btn btn-secondary" href="https://www.protoncube.com/solitaire.html">Open Solitaire</a></div></div><section class="card calculator" id="calculator" aria-label="Clock-out time calculator"><div class="logo-panel"><label class="btn btn-secondary" for="imageUpload">Upload header image</label><input class="file-input" type="file" id="imageUpload" accept="image/*"><img id="headerImage" alt="Custom header image preview"><div class="logo-actions"><button class="btn btn-secondary" id="resetImage" type="button">Reset image</button></div></div><div class="calculator-header"><div><h2>Clock-Out Calculator</h2><p>Plan your day in seconds.</p></div><button class="settings-button" id="settingsButton" type="button" aria-label="Open settings">⚙</button></div><div class="field"><label for="clockIn">Clock-in time</label><input type="time" id="clockIn" required></div><div class="field"><label for="lunch">Lunch duration, in minutes</label><input type="number" id="lunch" value="30" min="0" step="5"></div><div class="field" id="workHoursField" style="display:none"><label for="workHours">Workday length, in hours</label><input type="number" id="workHours" value="8" min="1" max="24" step="0.5"></div><button class="btn btn-primary" type="button" onclick="calculateClockOut()">Calculate time</button><div class="secondary-links"><a class="btn btn-secondary" href="https://www.protoncube.com/solitaire.html">Solitaire</a><a class="btn btn-secondary" href="https://www.protoncube.com/MindSweeper.html">MindSweeper</a></div><div class="result" id="result" role="status" aria-live="polite">Enter a start time to calculate your clock-out target.</div><div class="settings" id="settingsModal"><label><input type="checkbox" id="darkMode"> Enable dark mode</label><label><input type="checkbox" id="customHours"> Use custom work hours</label><label><input type="checkbox" id="use24Hour"> Use 24-hour result format</label></div></section></section><section class="feature-grid" aria-label="Key benefits"><article class="card feature"><h3>Fast answer</h3><p>Get the exact clock-out target without manual math or repeated time conversions.</p></article><article class="card feature"><h3>Flexible settings</h3><p>Save dark mode, custom work hours, and 24-hour format preferences locally in the browser.</p></article><article class="card feature"><h3>Clean experience</h3><p>A polished responsive design keeps the calculator readable and professional on any screen size.</p></article></section><p class="footer">Hosted on GitHub. Built by Aaron Draheim.</p></main>
-<script>const imageUpload=document.getElementById("imageUpload");const headerImage=document.getElementById("headerImage");const resetImage=document.getElementById("resetImage");const settingsButton=document.getElementById("settingsButton");const settingsModal=document.getElementById("settingsModal");const darkModeToggle=document.getElementById("darkMode");const customHoursToggle=document.getElementById("customHours");const use24HourToggle=document.getElementById("use24Hour");const workHoursField=document.getElementById("workHoursField");function applySettings(){const isDark=localStorage.getItem("darkMode")==="true";const isCustom=localStorage.getItem("customHours")==="true";darkModeToggle.checked=isDark;customHoursToggle.checked=isCustom;use24HourToggle.checked=localStorage.getItem("use24Hour")==="true";document.body.classList.toggle("dark",isDark);workHoursField.style.display=isCustom?"block":"none"}function saveSettings(){localStorage.setItem("darkMode",darkModeToggle.checked);localStorage.setItem("customHours",customHoursToggle.checked);localStorage.setItem("use24Hour",use24HourToggle.checked);applySettings()}function calculateClockOut(){const clockIn=document.getElementById("clockIn").value;const lunch=parseInt(document.getElementById("lunch").value,10)||0;const workHours=parseFloat(document.getElementById("workHours").value)||8;const use24Hour=localStorage.getItem("use24Hour")==="true";const result=document.getElementById("result");if(!clockIn){result.textContent="Please enter a valid clock-in time first.";return}const[hours,minutes]=clockIn.split(":").map(Number);const startDate=new Date();startDate.setHours(hours,minutes,0,0);const endDate=new Date(startDate.getTime()+((workHours*60)+lunch)*60000);let endHours=endDate.getHours();const endMinutes=String(endDate.getMinutes()).padStart(2,"0");let displayTime;if(use24Hour){displayTime=`${String(endHours).padStart(2,"0")}:${endMinutes}`}else{const ampm=endHours>=12?"PM":"AM";endHours=endHours%12||12;displayTime=`${endHours}:${endMinutes} ${ampm}`}result.textContent=`Your target clock-out time is ${displayTime}.`}function loadImage(){const savedImage=localStorage.getItem("headerImage");if(savedImage){headerImage.src=savedImage}}imageUpload.addEventListener("change",function(){const file=this.files[0];if(!file)return;const reader=new FileReader();reader.onload=function(event){headerImage.src=event.target.result;localStorage.setItem("headerImage",event.target.result)};reader.readAsDataURL(file)});resetImage.addEventListener("click",function(){headerImage.removeAttribute("src");localStorage.removeItem("headerImage")});settingsButton.addEventListener("click",function(){settingsModal.classList.toggle("open")});[darkModeToggle,customHoursToggle,use24HourToggle].forEach(toggle=>toggle.addEventListener("change",saveSettings));loadImage();applySettings();</script></body></html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clock-Out Time Calculator | ProtonCube</title>
+  <style>
+    :root {
+      --bg: #eef3fb;
+      --surface: #ffffff;
+      --text: #172033;
+      --muted: #5d6b82;
+      --primary: #1f5eff;
+      --primary-dark: #1647c7;
+      --border: #d9e2f2;
+      --shadow: 0 24px 60px rgba(23, 32, 51, .14);
+      --radius: 22px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, Segoe UI, Arial, sans-serif;
+      background: radial-gradient(circle at top left, #dbe8ff, transparent 34%), linear-gradient(135deg, #f7faff 0%, #eef3fb 100%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    body.dark {
+      --surface: #1f2937;
+      --text: #f9fafb;
+      --muted: #cbd5e1;
+      --primary: #7aa2ff;
+      --primary-dark: #9bb9ff;
+      --border: #374151;
+      background: linear-gradient(135deg, #0b1120, #111827);
+    }
+
+    .page {
+      width: min(1120px, 92vw);
+      margin: 0 auto;
+      padding: 48px 0;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 36px;
+      align-items: center;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .72);
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    h1 {
+      font-size: clamp(42px, 6vw, 72px);
+      line-height: .95;
+      margin: 22px 0 18px;
+      letter-spacing: -2px;
+    }
+
+    .lead {
+      font-size: 20px;
+      line-height: 1.65;
+      color: var(--muted);
+      max-width: 670px;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 14px;
+      padding: 14px 18px;
+      font-weight: 800;
+      font-size: 15px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .btn-secondary {
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .card {
+      background: rgba(255, 255, 255, .82);
+      backdrop-filter: blur(18px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .calculator {
+      padding: 28px;
+    }
+
+    .field {
+      margin: 16px 0;
+    }
+
+    .field label {
+      display: block;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .field input {
+      width: 100%;
+      padding: 13px 14px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--surface);
+      color: var(--text);
+      font-size: 16px;
+    }
+
+    .result {
+      margin-top: 18px;
+      padding: 18px;
+      border-radius: 16px;
+      background: #edf4ff;
+      color: #0f326d;
+      font-size: 18px;
+      font-weight: 900;
+      text-align: center;
+    }
+
+    .settings {
+      display: none;
+      margin-top: 16px;
+      padding: 16px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+    }
+
+    .settings.open {
+      display: block;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-top: 38px;
+    }
+
+    .feature {
+      padding: 22px;
+    }
+
+    .footer {
+      margin-top: 38px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    @media (max-width: 860px) {
+      .hero {
+        grid-template-columns: 1fr;
+      }
+
+      .feature-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <div>
+        <span class="eyebrow">Simple schedule planning, built for daily use</span>
+        <h1>Know exactly when your workday ends.</h1>
+        <p class="lead">Enter your clock-in time, lunch duration, and workday length to instantly calculate your target clock-out time. Fast, clean, and easy to use on desktop or mobile.</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#calculator">Calculate clock-out time</a>
+          <a class="btn btn-secondary" href="https://www.protoncube.com/solitaire.html">Open Solitaire</a>
+        </div>
+      </div>
+
+      <section class="card calculator" id="calculator" aria-label="Clock-out time calculator">
+        <div class="logo-panel">
+          <label class="btn btn-secondary" for="imageUpload">Upload header image</label>
+          <input class="file-input" type="file" id="imageUpload" accept="image/*">
+          <img id="headerImage" alt="Custom header image preview">
+          <div class="logo-actions">
+            <button class="btn btn-secondary" id="resetImage" type="button">Reset image</button>
+          </div>
+        </div>
+
+        <div class="calculator-header">
+          <div>
+            <h2>Clock-Out Calculator</h2>
+            <p>Plan your day in seconds.</p>
+          </div>
+          <button class="settings-button" id="settingsButton" type="button" aria-label="Open settings">Settings</button>
+        </div>
+
+        <div class="field">
+          <label for="clockIn">Clock-in time</label>
+          <input type="time" id="clockIn" required>
+        </div>
+
+        <div class="field">
+          <label for="lunch">Lunch duration, in minutes</label>
+          <input type="number" id="lunch" value="30" min="0" step="5">
+        </div>
+
+        <div class="field" id="workHoursField" style="display:none">
+          <label for="workHours">Workday length, in hours</label>
+          <input type="number" id="workHours" value="8" min="1" max="24" step="0.5">
+        </div>
+
+        <button class="btn btn-primary" type="button" onclick="calculateClockOut()">Calculate time</button>
+
+        <div class="secondary-links">
+          <a class="btn btn-secondary" href="https://www.protoncube.com/solitaire.html">Solitaire</a>
+          <a class="btn btn-secondary" href="https://www.protoncube.com/MindSweeper.html">MindSweeper</a>
+        </div>
+
+        <div class="result" id="result" role="status" aria-live="polite">Enter a start time to calculate your clock-out target.</div>
+
+        <div class="settings" id="settingsModal">
+          <label><input type="checkbox" id="darkMode"> Enable dark mode</label>
+          <label><input type="checkbox" id="customHours"> Use custom work hours</label>
+          <label><input type="checkbox" id="use24Hour"> Use 24-hour result format</label>
+        </div>
+      </section>
+    </section>
+
+    <section class="feature-grid" aria-label="Key benefits">
+      <article class="card feature">
+        <h3>Fast answer</h3>
+        <p>Get the exact clock-out target without manual math or repeated time conversions.</p>
+      </article>
+
+      <article class="card feature">
+        <h3>Flexible settings</h3>
+        <p>Save dark mode, custom work hours, and 24-hour format preferences locally in the browser.</p>
+      </article>
+
+      <article class="card feature">
+        <h3>Clean experience</h3>
+        <p>A polished responsive design keeps the calculator readable and professional on any screen size.</p>
+      </article>
+    </section>
+
+    <p class="footer">Hosted on GitHub. Built by Aaron Draheim.</p>
+  </main>
+<script>
+  const imageUpload = document.getElementById("imageUpload");
+  const headerImage = document.getElementById("headerImage");
+  const resetImage = document.getElementById("resetImage");
+  const settingsButton = document.getElementById("settingsButton");
+  const settingsModal = document.getElementById("settingsModal");
+  const darkModeToggle = document.getElementById("darkMode");
+  const customHoursToggle = document.getElementById("customHours");
+  const use24HourToggle = document.getElementById("use24Hour");
+  const workHoursField = document.getElementById("workHoursField");
+
+  function applySettings() {
+    const isDark = localStorage.getItem("darkMode") === "true";
+    const isCustom = localStorage.getItem("customHours") === "true";
+    const use24Hour = localStorage.getItem("use24Hour") === "true";
+
+    darkModeToggle.checked = isDark;
+    customHoursToggle.checked = isCustom;
+    use24HourToggle.checked = use24Hour;
+
+    document.body.classList.toggle("dark", isDark);
+    workHoursField.style.display = isCustom ? "block" : "none";
+  }
+
+  function saveSettings() {
+    localStorage.setItem("darkMode", darkModeToggle.checked);
+    localStorage.setItem("customHours", customHoursToggle.checked);
+    localStorage.setItem("use24Hour", use24HourToggle.checked);
+
+    applySettings();
+  }
+
+  function calculateClockOut() {
+    const clockIn = document.getElementById("clockIn").value;
+    const lunch = parseInt(document.getElementById("lunch").value, 10) || 0;
+    const workHours = parseFloat(document.getElementById("workHours").value) || 8;
+    const use24Hour = localStorage.getItem("use24Hour") === "true";
+    const result = document.getElementById("result");
+
+    if (!clockIn) {
+      result.textContent = "Please enter a valid clock-in time first.";
+      return;
+    }
+
+    const [hours, minutes] = clockIn.split(":").map(Number);
+    const startDate = new Date();
+
+    startDate.setHours(hours, minutes, 0, 0);
+
+    const totalMinutes = (workHours * 60) + lunch;
+    const endDate = new Date(startDate.getTime() + totalMinutes * 60000);
+
+    let endHours = endDate.getHours();
+    const endMinutes = String(endDate.getMinutes()).padStart(2, "0");
+    let displayTime;
+
+    if (use24Hour) {
+      displayTime = `${String(endHours).padStart(2, "0")}:${endMinutes}`;
+    } else {
+      const ampm = endHours >= 12 ? "PM" : "AM";
+      endHours = endHours % 12 || 12;
+      displayTime = `${endHours}:${endMinutes} ${ampm}`;
+    }
+
+    result.textContent = `Your target clock-out time is ${displayTime}.`;
+  }
+
+  function loadImage() {
+    const savedImage = localStorage.getItem("headerImage");
+
+    if (savedImage) {
+      headerImage.src = savedImage;
+    }
+  }
+
+  imageUpload.addEventListener("change", function () {
+    const file = this.files[0];
+
+    if (!file) {
+      return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = function (event) {
+      headerImage.src = event.target.result;
+      localStorage.setItem("headerImage", event.target.result);
+    };
+
+    reader.readAsDataURL(file);
+  });
+
+  resetImage.addEventListener("click", function () {
+    headerImage.removeAttribute("src");
+    localStorage.removeItem("headerImage");
+  });
+
+  settingsButton.addEventListener("click", function () {
+    settingsModal.classList.toggle("open");
+  });
+
+  [darkModeToggle, customHoursToggle, use24HourToggle].forEach(function (toggle) {
+    toggle.addEventListener("change", saveSettings);
+  });
+
+  loadImage();
+  applySettings();
+</script>
+</body>
+</html>
 
