@@ -1,3 +1,4 @@
+This Website is hosted on GitHub and was built by Aaron Draheim.
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -191,7 +192,7 @@
       <div>
         <span class="eyebrow">Simple schedule planning, built for daily use</span>
         <h1>Know exactly when your workday ends.</h1>
-        <p class="lead">Enter your clock-in time, lunch duration, and workday length to instantly calculate your target clock-out time. Fast, clean, and easy to use on desktop or mobile.</p>
+        <p class="lead">Calculate your clock-out time from your start time, lunch duration, and workday length. Built for quick daily use with saved preferences and a clean, focused layout.</p>
         <div class="hero-actions">
           <a class="btn btn-primary" href="#calculator">Calculate clock-out time</a>
           <a class="btn btn-secondary" href="https://www.protoncube.com/solitaire.html">Open Solitaire</a>
@@ -199,21 +200,17 @@
       </div>
 
       <section class="card calculator" id="calculator" aria-label="Clock-out time calculator">
-        <div class="logo-panel">
-          <label class="btn btn-secondary" for="imageUpload">Upload header image</label>
-          <input class="file-input" type="file" id="imageUpload" accept="image/*">
-          <img id="headerImage" alt="Custom header image preview">
-          <div class="logo-actions">
-            <button class="btn btn-secondary" id="resetImage" type="button">Reset image</button>
-          </div>
-        </div>
-
         <div class="calculator-header">
           <div>
             <h2>Clock-Out Calculator</h2>
             <p>Plan your day in seconds.</p>
           </div>
           <button class="settings-button" id="settingsButton" type="button" aria-label="Open settings">Settings</button>
+        </div>
+
+        <div class="quick-actions">
+          <button class="btn btn-secondary" id="useCurrentTime" type="button">Use current time</button>
+          <button class="btn btn-secondary" id="resetCalculator" type="button">Reset calculator</button>
         </div>
 
         <div class="field">
@@ -231,14 +228,10 @@
           <input type="number" id="workHours" value="8" min="1" max="24" step="0.5">
         </div>
 
-        <button class="btn btn-primary" type="button" onclick="calculateClockOut()">Calculate time</button>
-
-        <div class="secondary-links">
-          <a class="btn btn-secondary" href="https://www.protoncube.com/solitaire.html">Solitaire</a>
-          <a class="btn btn-secondary" href="https://www.protoncube.com/MindSweeper.html">MindSweeper</a>
-        </div>
+        <button class="btn btn-primary" id="calculateButton" type="button">Calculate time</button>
 
         <div class="result" id="result" role="status" aria-live="polite">Enter a start time to calculate your clock-out target.</div>
+        <p class="summary" id="summaryText">Default schedule: 8 hours of work with a 30-minute lunch.</p>
 
         <div class="settings" id="settingsModal">
           <label><input type="checkbox" id="darkMode"> Enable dark mode</label>
@@ -255,28 +248,33 @@
       </article>
 
       <article class="card feature">
-        <h3>Flexible settings</h3>
-        <p>Save dark mode, custom work hours, and 24-hour format preferences locally in the browser.</p>
+        <h3>Saved preferences</h3>
+        <p>Keep dark mode, custom work hours, and 24-hour format settings saved locally in the browser.</p>
       </article>
 
       <article class="card feature">
-        <h3>Clean experience</h3>
-        <p>A polished responsive design keeps the calculator readable and professional on any screen size.</p>
+        <h3>Cleaner workflow</h3>
+        <p>Use current time, reset quickly, and press Enter to calculate without extra clicks.</p>
       </article>
     </section>
 
     <p class="footer">Hosted on GitHub. Built by Aaron Draheim.</p>
   </main>
 <script>
-  const imageUpload = document.getElementById("imageUpload");
-  const headerImage = document.getElementById("headerImage");
-  const resetImage = document.getElementById("resetImage");
   const settingsButton = document.getElementById("settingsButton");
   const settingsModal = document.getElementById("settingsModal");
   const darkModeToggle = document.getElementById("darkMode");
   const customHoursToggle = document.getElementById("customHours");
   const use24HourToggle = document.getElementById("use24Hour");
   const workHoursField = document.getElementById("workHoursField");
+  const clockInInput = document.getElementById("clockIn");
+  const lunchInput = document.getElementById("lunch");
+  const workHoursInput = document.getElementById("workHours");
+  const calculateButton = document.getElementById("calculateButton");
+  const useCurrentTimeButton = document.getElementById("useCurrentTime");
+  const resetCalculatorButton = document.getElementById("resetCalculator");
+  const result = document.getElementById("result");
+  const summaryText = document.getElementById("summaryText");
 
   function applySettings() {
     const isDark = localStorage.getItem("darkMode") === "true";
@@ -289,6 +287,7 @@
 
     document.body.classList.toggle("dark", isDark);
     workHoursField.style.display = isCustom ? "block" : "none";
+    updateSummary();
   }
 
   function saveSettings() {
@@ -299,15 +298,45 @@
     applySettings();
   }
 
+  function updateSummary() {
+    const lunch = parseInt(lunchInput.value, 10) || 0;
+    const workHours = customHoursToggle.checked ? parseFloat(workHoursInput.value) || 8 : 8;
+
+    summaryText.textContent = `Current schedule: ${workHours} work hours with a ${lunch}-minute lunch.`;
+  }
+
+  function formatTime(date, use24Hour) {
+    let hours = date.getHours();
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+
+    if (use24Hour) {
+      return `${String(hours).padStart(2, "0")}:${minutes}`;
+    }
+
+    const ampm = hours >= 12 ? "PM" : "AM";
+    hours = hours % 12 || 12;
+
+    return `${hours}:${minutes} ${ampm}`;
+  }
+
   function calculateClockOut() {
-    const clockIn = document.getElementById("clockIn").value;
-    const lunch = parseInt(document.getElementById("lunch").value, 10) || 0;
-    const workHours = parseFloat(document.getElementById("workHours").value) || 8;
+    const clockIn = clockInInput.value;
+    const lunch = parseInt(lunchInput.value, 10);
+    const workHours = customHoursToggle.checked ? parseFloat(workHoursInput.value) : 8;
     const use24Hour = localStorage.getItem("use24Hour") === "true";
-    const result = document.getElementById("result");
 
     if (!clockIn) {
       result.textContent = "Please enter a valid clock-in time first.";
+      return;
+    }
+
+    if (Number.isNaN(lunch) || lunch < 0) {
+      result.textContent = "Lunch duration must be zero minutes or greater.";
+      return;
+    }
+
+    if (Number.isNaN(workHours) || workHours <= 0 || workHours > 24) {
+      result.textContent = "Workday length must be between 1 and 24 hours.";
       return;
     }
 
@@ -318,61 +347,50 @@
 
     const totalMinutes = (workHours * 60) + lunch;
     const endDate = new Date(startDate.getTime() + totalMinutes * 60000);
-
-    let endHours = endDate.getHours();
-    const endMinutes = String(endDate.getMinutes()).padStart(2, "0");
-    let displayTime;
-
-    if (use24Hour) {
-      displayTime = `${String(endHours).padStart(2, "0")}:${endMinutes}`;
-    } else {
-      const ampm = endHours >= 12 ? "PM" : "AM";
-      endHours = endHours % 12 || 12;
-      displayTime = `${endHours}:${endMinutes} ${ampm}`;
-    }
+    const displayTime = formatTime(endDate, use24Hour);
 
     result.textContent = `Your target clock-out time is ${displayTime}.`;
+    updateSummary();
   }
 
-  function loadImage() {
-    const savedImage = localStorage.getItem("headerImage");
+  function useCurrentTime() {
+    const now = new Date();
+    const hours = String(now.getHours()).padStart(2, "0");
+    const minutes = String(now.getMinutes()).padStart(2, "0");
 
-    if (savedImage) {
-      headerImage.src = savedImage;
-    }
+    clockInInput.value = `${hours}:${minutes}`;
+    calculateClockOut();
   }
 
-  imageUpload.addEventListener("change", function () {
-    const file = this.files[0];
-
-    if (!file) {
-      return;
-    }
-
-    const reader = new FileReader();
-
-    reader.onload = function (event) {
-      headerImage.src = event.target.result;
-      localStorage.setItem("headerImage", event.target.result);
-    };
-
-    reader.readAsDataURL(file);
-  });
-
-  resetImage.addEventListener("click", function () {
-    headerImage.removeAttribute("src");
-    localStorage.removeItem("headerImage");
-  });
+  function resetCalculator() {
+    clockInInput.value = "";
+    lunchInput.value = "30";
+    workHoursInput.value = "8";
+    result.textContent = "Enter a start time to calculate your clock-out target.";
+    updateSummary();
+  }
 
   settingsButton.addEventListener("click", function () {
     settingsModal.classList.toggle("open");
   });
 
+  calculateButton.addEventListener("click", calculateClockOut);
+  useCurrentTimeButton.addEventListener("click", useCurrentTime);
+  resetCalculatorButton.addEventListener("click", resetCalculator);
+
   [darkModeToggle, customHoursToggle, use24HourToggle].forEach(function (toggle) {
     toggle.addEventListener("change", saveSettings);
   });
 
-  loadImage();
+  [clockInInput, lunchInput, workHoursInput].forEach(function (input) {
+    input.addEventListener("input", updateSummary);
+    input.addEventListener("keydown", function (event) {
+      if (event.key === "Enter") {
+        calculateClockOut();
+      }
+    });
+  });
+
   applySettings();
 </script>
 </body>
