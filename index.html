@@ -7,7 +7,6 @@ This Website is hosted on GitHub and was built by Aaron Draheim.
   <title>Clock-Out Time Calculator | ProtonCube</title>
   <style>
     :root {
-      --bg: #eef3fb;
       --surface: #ffffff;
       --text: #172033;
       --muted: #5d6b82;
@@ -53,6 +52,14 @@ This Website is hosted on GitHub and was built by Aaron Draheim.
       align-items: center;
     }
 
+    .hero-actions,
+    .quick-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin: 18px 0;
+    }
+
     .eyebrow {
       display: inline-flex;
       padding: 8px 12px;
@@ -96,6 +103,10 @@ This Website is hosted on GitHub and was built by Aaron Draheim.
       color: #fff;
     }
 
+    .btn-primary:hover {
+      background: var(--primary-dark);
+    }
+
     .btn-secondary {
       background: var(--surface);
       color: var(--text);
@@ -110,15 +121,24 @@ This Website is hosted on GitHub and was built by Aaron Draheim.
       box-shadow: var(--shadow);
     }
 
+    body.dark .card {
+      background: rgba(31, 41, 55, .88);
+    }
+
     .calculator {
       padding: 28px;
+    }
+
+    .calculator-header {
+      margin-bottom: 16px;
     }
 
     .field {
       margin: 16px 0;
     }
 
-    .field label {
+    .field label,
+    .settings label {
       display: block;
       font-weight: 800;
       margin-bottom: 8px;
@@ -134,6 +154,26 @@ This Website is hosted on GitHub and was built by Aaron Draheim.
       font-size: 16px;
     }
 
+    .settings {
+      display: block;
+      margin: 16px 0 20px;
+      padding: 16px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, .52);
+    }
+
+    .settings strong {
+      display: block;
+      margin-bottom: 12px;
+    }
+
+    .summary {
+      color: var(--muted);
+      font-size: 14px;
+      text-align: center;
+    }
+
     .result {
       margin-top: 18px;
       padding: 18px;
@@ -145,16 +185,9 @@ This Website is hosted on GitHub and was built by Aaron Draheim.
       text-align: center;
     }
 
-    .settings {
-      display: none;
-      margin-top: 16px;
-      padding: 16px;
-      border-radius: 16px;
-      border: 1px solid var(--border);
-    }
-
-    .settings.open {
-      display: block;
+    body.dark .result {
+      background: #172554;
+      color: #dbeafe;
     }
 
     .feature-grid {
@@ -166,6 +199,10 @@ This Website is hosted on GitHub and was built by Aaron Draheim.
 
     .feature {
       padding: 22px;
+    }
+
+    .feature p {
+      color: var(--muted);
     }
 
     .footer {
@@ -205,7 +242,13 @@ This Website is hosted on GitHub and was built by Aaron Draheim.
             <h2>Clock-Out Calculator</h2>
             <p>Plan your day in seconds.</p>
           </div>
-          <button class="settings-button" id="settingsButton" type="button" aria-label="Open settings">Settings</button>
+        </div>
+
+        <div class="settings open" id="settingsModal">
+          <strong>Preferences</strong>
+          <label><input type="checkbox" id="darkMode"> Dark mode</label>
+          <label><input type="checkbox" id="customHours"> Custom work hours</label>
+          <label><input type="checkbox" id="use24Hour"> 24-hour result format</label>
         </div>
 
         <div class="quick-actions">
@@ -223,7 +266,7 @@ This Website is hosted on GitHub and was built by Aaron Draheim.
           <input type="number" id="lunch" value="30" min="0" step="5">
         </div>
 
-        <div class="field" id="workHoursField" style="display:none">
+        <div class="field" id="workHoursField">
           <label for="workHours">Workday length, in hours</label>
           <input type="number" id="workHours" value="8" min="1" max="24" step="0.5">
         </div>
@@ -231,13 +274,7 @@ This Website is hosted on GitHub and was built by Aaron Draheim.
         <button class="btn btn-primary" id="calculateButton" type="button">Calculate time</button>
 
         <div class="result" id="result" role="status" aria-live="polite">Enter a start time to calculate your clock-out target.</div>
-        <p class="summary" id="summaryText">Default schedule: 8 hours of work with a 30-minute lunch.</p>
-
-        <div class="settings" id="settingsModal">
-          <label><input type="checkbox" id="darkMode"> Enable dark mode</label>
-          <label><input type="checkbox" id="customHours"> Use custom work hours</label>
-          <label><input type="checkbox" id="use24Hour"> Use 24-hour result format</label>
-        </div>
+        <p class="summary" id="summaryText">Current schedule: 8 work hours with a 30-minute lunch.</p>
       </section>
     </section>
 
@@ -248,8 +285,8 @@ This Website is hosted on GitHub and was built by Aaron Draheim.
       </article>
 
       <article class="card feature">
-        <h3>Saved preferences</h3>
-        <p>Keep dark mode, custom work hours, and 24-hour format settings saved locally in the browser.</p>
+        <h3>No hidden controls</h3>
+        <p>Preferences are visible by default, making the page more reliable and easier to use.</p>
       </article>
 
       <article class="card feature">
@@ -261,139 +298,121 @@ This Website is hosted on GitHub and was built by Aaron Draheim.
     <p class="footer">Hosted on GitHub. Built by Aaron Draheim.</p>
   </main>
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const settingsButton = document.getElementById("settingsButton");
-    const settingsModal = document.getElementById("settingsModal");
-    const darkModeToggle = document.getElementById("darkMode");
-    const customHoursToggle = document.getElementById("customHours");
-    const use24HourToggle = document.getElementById("use24Hour");
-    const workHoursField = document.getElementById("workHoursField");
-    const clockInInput = document.getElementById("clockIn");
-    const lunchInput = document.getElementById("lunch");
-    const workHoursInput = document.getElementById("workHours");
-    const calculateButton = document.getElementById("calculateButton");
-    const useCurrentTimeButton = document.getElementById("useCurrentTime");
-    const resetCalculatorButton = document.getElementById("resetCalculator");
-    const result = document.getElementById("result");
-    const summaryText = document.getElementById("summaryText");
+  const darkModeToggle = document.getElementById("darkMode");
+  const customHoursToggle = document.getElementById("customHours");
+  const use24HourToggle = document.getElementById("use24Hour");
+  const workHoursField = document.getElementById("workHoursField");
+  const clockInInput = document.getElementById("clockIn");
+  const lunchInput = document.getElementById("lunch");
+  const workHoursInput = document.getElementById("workHours");
+  const calculateButton = document.getElementById("calculateButton");
+  const useCurrentTimeButton = document.getElementById("useCurrentTime");
+  const resetCalculatorButton = document.getElementById("resetCalculator");
+  const result = document.getElementById("result");
+  const summaryText = document.getElementById("summaryText");
 
-    if (!settingsButton || !settingsModal) {
+  function loadPreferences() {
+    darkModeToggle.checked = localStorage.getItem("darkMode") === "true";
+    customHoursToggle.checked = localStorage.getItem("customHours") === "true";
+    use24HourToggle.checked = localStorage.getItem("use24Hour") === "true";
+    document.body.classList.toggle("dark", darkModeToggle.checked);
+    workHoursField.style.display = customHoursToggle.checked ? "block" : "none";
+    updateSummary();
+  }
+
+  function savePreferences() {
+    localStorage.setItem("darkMode", darkModeToggle.checked);
+    localStorage.setItem("customHours", customHoursToggle.checked);
+    localStorage.setItem("use24Hour", use24HourToggle.checked);
+    loadPreferences();
+  }
+
+  function updateSummary() {
+    const lunch = parseInt(lunchInput.value, 10) || 0;
+    const workHours = customHoursToggle.checked ? parseFloat(workHoursInput.value) || 8 : 8;
+    summaryText.textContent = `Current schedule: ${workHours} work hours with a ${lunch}-minute lunch.`;
+  }
+
+  function formatTime(date) {
+    let hours = date.getHours();
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+
+    if (use24HourToggle.checked) {
+      return `${String(hours).padStart(2, "0")}:${minutes}`;
+    }
+
+    const ampm = hours >= 12 ? "PM" : "AM";
+    hours = hours % 12 || 12;
+
+    return `${hours}:${minutes} ${ampm}`;
+  }
+
+  function calculateClockOut() {
+    const clockIn = clockInInput.value;
+    const lunch = parseInt(lunchInput.value, 10);
+    const workHours = customHoursToggle.checked ? parseFloat(workHoursInput.value) : 8;
+
+    if (!clockIn) {
+      result.textContent = "Please enter a valid clock-in time first.";
       return;
     }
 
-    function applySettings() {
-      const isDark = localStorage.getItem("darkMode") === "true";
-      const isCustom = localStorage.getItem("customHours") === "true";
-      const use24Hour = localStorage.getItem("use24Hour") === "true";
-
-      darkModeToggle.checked = isDark;
-      customHoursToggle.checked = isCustom;
-      use24HourToggle.checked = use24Hour;
-
-      document.body.classList.toggle("dark", isDark);
-      workHoursField.style.display = isCustom ? "block" : "none";
-      updateSummary();
+    if (Number.isNaN(lunch) || lunch < 0) {
+      result.textContent = "Lunch duration must be zero minutes or greater.";
+      return;
     }
 
-    function saveSettings() {
-      localStorage.setItem("darkMode", darkModeToggle.checked);
-      localStorage.setItem("customHours", customHoursToggle.checked);
-      localStorage.setItem("use24Hour", use24HourToggle.checked);
-      applySettings();
+    if (Number.isNaN(workHours) || workHours <= 0 || workHours > 24) {
+      result.textContent = "Workday length must be between 1 and 24 hours.";
+      return;
     }
 
-    function updateSummary() {
-      const lunch = parseInt(lunchInput.value, 10) || 0;
-      const workHours = customHoursToggle.checked ? parseFloat(workHoursInput.value) || 8 : 8;
-      summaryText.textContent = `Current schedule: ${workHours} work hours with a ${lunch}-minute lunch.`;
-    }
+    const [hours, minutes] = clockIn.split(":").map(Number);
+    const startDate = new Date();
+    startDate.setHours(hours, minutes, 0, 0);
 
-    function formatTime(date, use24Hour) {
-      let hours = date.getHours();
-      const minutes = String(date.getMinutes()).padStart(2, "0");
+    const totalMinutes = (workHours * 60) + lunch;
+    const endDate = new Date(startDate.getTime() + totalMinutes * 60000);
 
-      if (use24Hour) {
-        return `${String(hours).padStart(2, "0")}:${minutes}`;
+    result.textContent = `Your target clock-out time is ${formatTime(endDate)}.`;
+    updateSummary();
+  }
+
+  function useCurrentTime() {
+    const now = new Date();
+    clockInInput.value = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+    calculateClockOut();
+  }
+
+  function resetCalculator() {
+    clockInInput.value = "";
+    lunchInput.value = "30";
+    workHoursInput.value = "8";
+    result.textContent = "Enter a start time to calculate your clock-out target.";
+    updateSummary();
+  }
+
+  calculateButton.addEventListener("click", calculateClockOut);
+  useCurrentTimeButton.addEventListener("click", useCurrentTime);
+  resetCalculatorButton.addEventListener("click", resetCalculator);
+
+  darkModeToggle.addEventListener("change", savePreferences);
+  customHoursToggle.addEventListener("change", savePreferences);
+  use24HourToggle.addEventListener("change", savePreferences);
+
+  clockInInput.addEventListener("input", updateSummary);
+  lunchInput.addEventListener("input", updateSummary);
+  workHoursInput.addEventListener("input", updateSummary);
+
+  [clockInInput, lunchInput, workHoursInput].forEach(function (input) {
+    input.addEventListener("keydown", function (event) {
+      if (event.key === "Enter") {
+        calculateClockOut();
       }
-
-      const ampm = hours >= 12 ? "PM" : "AM";
-      hours = hours % 12 || 12;
-      return `${hours}:${minutes} ${ampm}`;
-    }
-
-    function calculateClockOut() {
-      const clockIn = clockInInput.value;
-      const lunch = parseInt(lunchInput.value, 10);
-      const workHours = customHoursToggle.checked ? parseFloat(workHoursInput.value) : 8;
-      const use24Hour = localStorage.getItem("use24Hour") === "true";
-
-      if (!clockIn) {
-        result.textContent = "Please enter a valid clock-in time first.";
-        return;
-      }
-
-      if (Number.isNaN(lunch) || lunch < 0) {
-        result.textContent = "Lunch duration must be zero minutes or greater.";
-        return;
-      }
-
-      if (Number.isNaN(workHours) || workHours <= 0 || workHours > 24) {
-        result.textContent = "Workday length must be between 1 and 24 hours.";
-        return;
-      }
-
-      const [hours, minutes] = clockIn.split(":").map(Number);
-      const startDate = new Date();
-      startDate.setHours(hours, minutes, 0, 0);
-
-      const totalMinutes = (workHours * 60) + lunch;
-      const endDate = new Date(startDate.getTime() + totalMinutes * 60000);
-      const displayTime = formatTime(endDate, use24Hour);
-
-      result.textContent = `Your target clock-out time is ${displayTime}.`;
-      updateSummary();
-    }
-
-    function useCurrentTime() {
-      const now = new Date();
-      const hours = String(now.getHours()).padStart(2, "0");
-      const minutes = String(now.getMinutes()).padStart(2, "0");
-      clockInInput.value = `${hours}:${minutes}`;
-      calculateClockOut();
-    }
-
-    function resetCalculator() {
-      clockInInput.value = "";
-      lunchInput.value = "30";
-      workHoursInput.value = "8";
-      result.textContent = "Enter a start time to calculate your clock-out target.";
-      updateSummary();
-    }
-
-    settingsButton.addEventListener("click", function () {
-      const isOpen = settingsModal.classList.toggle("open");
-      settingsModal.style.display = isOpen ? "block" : "none";
     });
-
-    calculateButton.addEventListener("click", calculateClockOut);
-    useCurrentTimeButton.addEventListener("click", useCurrentTime);
-    resetCalculatorButton.addEventListener("click", resetCalculator);
-
-    [darkModeToggle, customHoursToggle, use24HourToggle].forEach(function (toggle) {
-      toggle.addEventListener("change", saveSettings);
-    });
-
-    [clockInInput, lunchInput, workHoursInput].forEach(function (input) {
-      input.addEventListener("input", updateSummary);
-      input.addEventListener("keydown", function (event) {
-        if (event.key === "Enter") {
-          calculateClockOut();
-        }
-      });
-    });
-
-    applySettings();
   });
+
+  loadPreferences();
 </script>
 </body>
 </html>
