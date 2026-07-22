@@ -9,7 +9,7 @@
   :root{
     --pile-w: clamp(60px, 11vw, 100px);
     --pile-h: calc(var(--pile-w) * 1.4);
-    --stack-gap: 20px;
+    --stack-gap: 28px;
   }
 
   * { box-sizing: border-box; }
@@ -54,7 +54,7 @@
     display: flex;
     gap: 10px;
     flex-wrap: wrap;
-    justify-content: center;
+    justify-content: flex-start;
     flex: 1 1 auto;
   }
 
@@ -64,7 +64,7 @@
     flex: 0 0 auto;
   }
 
-  .piles-group { display: contents; }
+  .piles-group { display: flex; gap: 10px; flex-wrap: nowrap; align-items: flex-start; }
 
   .pile {
     width: var(--pile-w);
@@ -75,7 +75,8 @@
     border-style: solid;
     flex-shrink: 0;
   }
-  .foundation, .tableau { border-style: dashed; }
+  .foundation { border-style: dashed; }
+  .tableau { border-style: dashed; height: calc(var(--pile-h) + 6 * var(--stack-gap)); }
 
   .card {
     width: calc(100% - 10px);
@@ -95,7 +96,9 @@
     cursor: move;
     touch-action: none;
     box-shadow: 0 8px 18px rgba(0,0,0,.22);
-  .card.red { color: red; }
+  }
+  .card.red { color: #c1121f; }
+  .card.black { color: #111; }
   .card.face-down {
     background: #000;
     color: #fff;
@@ -212,10 +215,10 @@
 <script>
 <!-- JavaScript Data -->
 const suits = [
-  { symbol: '&spades;', color: 'black' },
-  { symbol: '&clubs;', color: 'black' },
-  { symbol: '&hearts;', color: 'red' },
-  { symbol: '&diams;', color: 'red' }
+  { symbol: '♠', color: 'black' },
+  { symbol: '♣', color: 'black' },
+  { symbol: '♥', color: 'red' },
+  { symbol: '♦', color: 'red' }
 ];
 const ranks = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
 let deck = [], stock = [], waste = [], foundations = [[],[],[],[]], tableau = [[],[],[],[],[],[],[]];
@@ -290,7 +293,7 @@ function render(){
     tEl.innerHTML = '';
     tableau[i].forEach((card, index) => {
       const el = createCardElement(card, `tableau${i + 1}`, index);
-      el.style.top = `${index * 20}px`;
+      el.style.top = `${index * 28}px`;
       tEl.appendChild(el);
     });
   }
@@ -301,7 +304,7 @@ function createCardElement(card, pileId, index){
   div.className = 'card' + (card.faceUp ? '' : ' face-down');
 
   if (card.faceUp){
-    div.innerHTML = `${card.rank}${card.suit}`;
+    div.textContent = `${card.rank}${card.suit}`;
     div.classList.add(card.color);
 
     div.draggable = true;
@@ -380,12 +383,12 @@ function handleCardTouchStart(e, pileId, index){
     const mini = document.createElement('div');
     mini.className = 'card' + (card.faceUp ? '' : ' face-down');
     if (card.faceUp){
-      mini.innerHTML = `${card.rank}${card.suit}`;
+      mini.textContent = `${card.rank}${card.suit}`;
       mini.classList.add(card.color);
     }
     mini.style.position = 'absolute';
     mini.style.left = '0';
-    mini.style.top = `${i * 20}px`;
+    mini.style.top = `${i * 28}px`;
     mini.style.width = `calc(${getComputedStyle(document.querySelector('.pile')).width} - 10px)`;
     mini.style.height = `calc(${getComputedStyle(document.querySelector('.pile')).height} - 14px)`;
     ghost.appendChild(mini);
