@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RDP Access Portal | ProtonCube</title>
+<meta name="description" content="ProtonCube temporary remote access portal concept.">
+<style>
+:root{
+  --bg:#f5f7fb;--surface:#fff;--surface2:#eef3f9;--text:#172033;--muted:#64748b;
+  --accent:#2563eb;--accent2:#0ea5e9;--border:#dbe3ee;--danger:#dc2626;
+  --warn:#d97706;--success:#059669;--shadow:0 12px 35px rgba(15,23,42,.08);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+a{color:inherit;text-decoration:none}
+nav{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.9);backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+.nav-inner{max-width:1180px;margin:auto;padding:14px 22px;display:flex;align-items:center;justify-content:space-between}
+.brand{font-weight:800;font-size:1.2rem}.brand span{color:var(--accent)}
+.nav-links{display:flex;gap:22px}.nav-links a{font-size:.92rem;color:var(--muted);font-weight:600}.nav-links a:hover{color:var(--accent)}
+.hero{max-width:1180px;margin:auto;padding:72px 22px 45px}
+.eyebrow{display:inline-block;background:#dbeafe;color:#1d4ed8;padding:6px 11px;border-radius:999px;font-size:.76rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+h1{font-size:clamp(2.5rem,6vw,4.5rem);line-height:1.02;margin:18px 0;letter-spacing:-.05em}
+.hero p{max-width:760px;color:var(--muted);font-size:1.08rem}
+.container{max-width:1180px;margin:auto;padding:0 22px 70px}
+.banner{border:2px solid var(--warn);background:#fff7ed;border-radius:18px;padding:20px 22px;margin-bottom:28px}
+.banner strong{color:#9a3412}.banner p{margin:5px 0 0;color:#7c2d12}
+.section{margin-top:46px}h2{font-size:1.7rem;margin:0 0 8px;letter-spacing:-.025em}
+.intro{color:var(--muted);max-width:780px;margin:0 0 20px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:17px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:22px;box-shadow:var(--shadow)}
+.card h3{margin:0 0 8px;font-size:1.05rem}.card p{margin:0;color:var(--muted);font-size:.93rem}
+.label{font-size:.7rem;font-weight:900;color:var(--accent);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px}
+.flow{display:flex;align-items:stretch;gap:12px;flex-wrap:wrap}
+.flow-step{flex:1;min-width:190px;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px}
+.flow-step .num{font-weight:900;color:var(--accent);font-size:.8rem}.flow-step strong{display:block;margin:5px 0}
+.arrow{align-self:center;color:var(--muted);font-weight:900}
+form{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:25px;box-shadow:var(--shadow);max-width:760px}
+.field{margin-bottom:17px}.field label{display:block;font-weight:750;margin-bottom:6px}.field small{display:block;color:var(--muted);margin-top:5px}
+input,select,textarea{width:100%;border:1px solid #cbd5e1;border-radius:10px;padding:12px 13px;font:inherit;background:white;color:#172033}
+textarea{min-height:95px;resize:vertical}
+button{border:0;border-radius:10px;background:var(--accent);color:white;font-weight:800;padding:12px 18px;font:inherit;cursor:pointer}
+button:hover{filter:brightness(.95)}
+.config{background:#111827;color:#e5e7eb;border:3px solid #f59e0b;border-radius:18px;overflow:hidden;box-shadow:var(--shadow)}
+.config-head{background:#f59e0b;color:#111827;padding:12px 17px;font-weight:900;letter-spacing:.05em}
+pre{margin:0;padding:21px;overflow:auto;font:13px/1.7 Consolas,Monaco,monospace}
+.hl{color:#fbbf24;font-weight:800}
+.comment{color:#94a3b8}
+.security{border-left:4px solid var(--success);background:#ecfdf5;border-radius:12px;padding:18px 20px;margin-top:18px}
+.security strong{color:#047857}
+.warning{border-left:4px solid var(--danger);background:#fef2f2;border-radius:12px;padding:18px 20px;margin-top:18px}
+.warning strong{color:#b91c1c}
+table{width:100%;border-collapse:collapse;background:var(--surface);border:1px solid var(--border);border-radius:15px;overflow:hidden}
+th,td{text-align:left;padding:13px 15px;border-bottom:1px solid var(--border);vertical-align:top}
+th{font-size:.82rem;text-transform:uppercase;letter-spacing:.06em;background:var(--surface2)}
+td{color:var(--muted);font-size:.92rem}
+code{background:#e2e8f0;padding:2px 5px;border-radius:5px;font-size:.9em}
+footer{border-top:1px solid var(--border);padding:30px 22px;text-align:center;color:var(--muted);font-size:.84rem}
+@media(max-width:850px){.grid{grid-template-columns:1fr 1fr}.arrow{display:none}}
+@media(max-width:560px){.grid{grid-template-columns:1fr}.nav-links{display:none}.hero{padding-top:52px}h1{font-size:3rem}}
+@media(prefers-color-scheme:dark){
+:root{--bg:#0b1220;--surface:#111a2b;--surface2:#182338;--text:#e7edf7;--muted:#9aa8bd;--border:#26354c;--shadow:0 12px 35px rgba(0,0,0,.22)}
+nav{background:rgba(11,18,32,.9)}
+.banner{background:#2a1c0d}.banner strong{color:#fbbf24}.banner p{color:#fed7aa}
+input,select,textarea{background:#0f172a;color:#e7edf7;border-color:#334155}
+th{background:#182338}.security{background:#09251d}.warning{background:#2a1013}
+code{background:#1e293b}
+}
+</style>
+</head>
+<body>
+
+<!--
+===============================================================================
+PROTONCUBE RDP ACCESS PORTAL — CONCEPT / INTEGRATION BASE
+===============================================================================
+
+PUBLIC SITE RULE:
+This file is intentionally a FRONT-END CONCEPT. It must NOT contain:
+- Firewall usernames/passwords
+- API keys/secrets
+- Internal firewall IPs
+- Internal server IPs
+- RDP credentials
+- Domain names that expose private infrastructure
+- Direct firewall API calls from browser JavaScript
+
+ARCHITECTURE:
+Browser -> Your Backend/API -> Firewall
+                         |
+                         +-> Audit / expiration / authorization
+
+The backend is the security boundary.
+===============================================================================
+-->
+
+<nav>
+  <div class="nav-inner">
+    <a class="brand" href="index.html">Proton<span>Cube</span></a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="homelab.html">Homelab</a>
+      <a href="x1052.html">Network</a>
+      <a href="orbi-770.html">Orbi 770</a>
+      <a href="#request">RDP Access</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <span class="eyebrow">Remote Access</span>
+  <h1>Temporary RDP<br>Access Portal</h1>
+  <p>
+    A public-facing access request page for temporarily allowing an authorized
+    source IP to reach a protected remote desktop service. Access should be
+    authenticated, logged, automatically expire, and be enforced by the firewall.
+  </p>
+</header>
+
+<main class="container">
+
+  <div class="banner">
+    <strong>CONCEPT / INTEGRATION REQUIRED</strong>
+    <p>
+      This page is intentionally not connected to a firewall yet. The highlighted
+      integration values below are the pieces you will replace when the backend
+      and firewall are selected.
+    </p>
+  </div>
+
+  <section class="section" id="request">
+    <h2>Request Access</h2>
+    <p class="intro">
+      The eventual user experience should be simple: authenticate, select an
+      access duration, submit the request, and receive a temporary access result.
+      The user's public IP should be detected server-side rather than trusted from
+      a form field.
+    </p>
+
+    <!--
+      IMPORTANT:
+      Replace this form's action with your backend endpoint.
+      Do NOT point it directly at an OPNsense/pfSense API.
+    -->
+    <form method="POST" action="/api/rdp/request">
+      <div class="field">
+        <label for="duration">Access Duration</label>
+        <select id="duration" name="duration">
+          <option value="15">15 minutes</option>
+          <option value="30" selected>30 minutes</option>
+          <option value="60">1 hour</option>
+          <option value="120">2 hours</option>
+          <option value="240">4 hours</option>
+        </select>
+        <small>Backend should enforce the maximum duration regardless of what the client submits.</small>
+      </div>
+
+      <div class="field">
+        <label for="reason">Reason</label>
+        <textarea id="reason" name="reason" placeholder="Briefly describe why remote access is needed."></textarea>
+        <small>Store this with the audit record if you want an access history.</small>
+      </div>
+
+      <div class="field">
+        <label>Detected Source IP</label>
+        <input type="text" value="Detected by backend after authentication" disabled>
+        <small>Do not allow visitors to manually choose an arbitrary IP address.</small>
+      </div>
+
+      <button type="submit">Request Temporary Access</button>
+    </form>
+
+    <div class="security">
+      <strong>Recommended authentication layer</strong>
+      <div>
+        Put authentication in front of this endpoint before it can modify firewall state.
+        A future version could use an identity provider, passkey/MFA, or another
+        authenticated mechanism.
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>How It Should Work</h2>
+    <p class="intro">The public page should remain intentionally dumb. The backend performs the sensitive operations.</p>
+
+    <div class="flow">
+      <div class="flow-step"><span class="num">01</span><strong>User authenticates</strong><span>Verify that the requester is authorized.</span></div>
+      <div class="arrow">→</div>
+      <div class="flow-step"><span class="num">02</span><strong>Backend detects IP</strong><span>Determine the source address from the actual request.</span></div>
+      <div class="arrow">→</div>
+      <div class="flow-step"><span class="num">03</span><strong>Firewall update</strong><span>Add the IP to a dedicated temporary-access mechanism.</span></div>
+      <div class="arrow">→</div>
+      <div class="flow-step"><span class="num">04</span><strong>Expiration</strong><span>Automatically remove the authorization.</span></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Firewall Integration Boundary</h2>
+    <p class="intro">
+      This is the most important section to customize. Keep these values on the
+      backend/server side. They should never be embedded in this public HTML.
+    </p>
+
+    <div class="config">
+      <div class="config-head">★ CHANGE THESE VALUES WHEN INTEGRATING ★</div>
+      <pre><span class="comment">// Example backend configuration — NOT for the public browser</span>
+
+FIREWALL_PROVIDER = "<span class="hl">CHANGE_ME</span>"
+# Examples: "opnsense", "pfsense", "custom"
+
+FIREWALL_API_BASE_URL = "<span class="hl">CHANGE_ME</span>"
+# Private/internal API endpoint.
+# Never expose this value to the browser.
+
+FIREWALL_API_KEY = "<span class="hl">CHANGE_ME_SECRET</span>"
+FIREWALL_API_SECRET = "<span class="hl">CHANGE_ME_SECRET</span>"
+
+RDP_ACCESS_ALIAS = "<span class="hl">CHANGE_ME</span>"
+# Recommended concept: a dedicated host/IP alias
+# used ONLY by the RDP allow rule.
+
+RDP_TARGET = "<span class="hl">CHANGE_ME</span>"
+# Internal RDP destination.
+
+RDP_PORT = <span class="hl">CHANGE_ME</span>
+# Normally 3389 internally.
+
+MAX_ACCESS_MINUTES = <span class="hl">CHANGE_ME</span>
+
+AUTH_PROVIDER = "<span class="hl">CHANGE_ME</span>"
+# Identity/MFA provider used to authorize requests.
+
+AUDIT_LOG_DESTINATION = "<span class="hl">CHANGE_ME</span>"
+# File, database, SIEM, etc.</pre>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Recommended Firewall Model</h2>
+    <p class="intro">
+      Use one dedicated source-IP object/alias for temporary RDP access instead of
+      dynamically creating and deleting an entire firewall rule for every request.
+      This keeps the permanent rule simple and makes the automation layer smaller.
+    </p>
+
+    <table>
+      <thead>
+        <tr><th>Component</th><th>Concept</th><th>What you change later</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Source</td>
+          <td>Dedicated temporary-access IP alias</td>
+          <td><code>RDP_ACCESS_ALIAS</code></td>
+        </tr>
+        <tr>
+          <td>Destination</td>
+          <td>Specific internal RDP server</td>
+          <td><code>RDP_TARGET</code></td>
+        </tr>
+        <tr>
+          <td>Service</td>
+          <td>TCP RDP service</td>
+          <td><code>RDP_PORT</code></td>
+        </tr>
+        <tr>
+          <td>Automation</td>
+          <td>Add source IP, wait for expiry, remove source IP</td>
+          <td>Firewall adapter/backend</td>
+        </tr>
+        <tr>
+          <td>Authorization</td>
+          <td>Authenticated user + policy check</td>
+          <td><code>AUTH_PROVIDER</code></td>
+        </tr>
+        <tr>
+          <td>Audit</td>
+          <td>User, source IP, start, expiry, result</td>
+          <td><code>AUDIT_LOG_DESTINATION</code></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="security">
+      <strong>Why an alias?</strong>
+      <div>
+        Firewall platforms such as OPNsense and pfSense support aliases for grouping
+        host/network addresses and referencing those groups from firewall rules.
+        OPNsense also documents API operations for adding and removing entries from
+        aliases. citeturn0search0turn0search1
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Backend Contract</h2>
+    <p class="intro">
+      Keep the frontend independent from the actual firewall vendor. Your backend
+      should expose a small API of its own and translate that request into the
+      firewall-specific API calls.
+    </p>
+
+    <div class="grid">
+      <div class="card">
+        <div class="label">POST</div>
+        <h3>/api/rdp/request</h3>
+        <p>Authenticate the requester, determine their source IP, validate the duration, and create the temporary authorization.</p>
+      </div>
+      <div class="card">
+        <div class="label">GET</div>
+        <h3>/api/rdp/status</h3>
+        <p>Return only safe status information such as whether the current authenticated session has active access.</p>
+      </div>
+      <div class="card">
+        <div class="label">POST</div>
+        <h3>/api/rdp/revoke</h3>
+        <p>Immediately remove the requester's temporary authorization when permitted.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Example Backend Request</h2>
+    <div class="config">
+      <div class="config-head">★ BACKEND LOGIC — ADAPT TO YOUR SERVER LANGUAGE ★</div>
+      <pre><span class="comment">// Pseudocode only — firewall credentials stay server-side</span>
+
+POST /api/rdp/request
+
+1. Require authenticated session
+2. Verify user is allowed to request RDP
+3. Detect source IP from trusted request metadata
+4. Validate requested duration
+5. Generate request ID
+6. Add source IP to RDP temporary-access alias
+7. Record expiration timestamp
+8. Schedule/remove authorization at expiration
+9. Write audit record
+10. Return request ID + expiration time
+
+<span class="comment">// Example response</span>
+{
+  "status": "active",
+  "request_id": "generated-server-side",
+  "expires_at": "server-generated timestamp"
+}</pre>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Firewall Adapter</h2>
+    <p class="intro">
+      The adapter is where vendor-specific code belongs. This lets the public portal
+      remain unchanged if the firewall changes later.
+    </p>
+
+    <div class="config">
+      <div class="config-head">★ IMPLEMENT THIS SERVER-SIDE ★</div>
+      <pre>class FirewallAdapter:
+
+    add_temporary_source(ip, expires_at):
+        # <span class="hl">CHANGE HERE</span>
+        # Call your firewall's API or automation interface.
+        # Validate ip before sending it.
+        pass
+
+    remove_temporary_source(ip):
+        # <span class="hl">CHANGE HERE</span>
+        # Remove the source from the temporary access mechanism.
+        pass
+
+    check_source(ip):
+        # <span class="hl">CHANGE HERE</span>
+        # Return whether the source is currently authorized.
+        pass</pre>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Security Requirements Before Going Live</h2>
+    <div class="grid">
+      <div class="card">
+        <div class="label">Required</div>
+        <h3>Authentication + MFA</h3>
+        <p>Do not allow an anonymous internet visitor to modify firewall access.</p>
+      </div>
+      <div class="card">
+        <div class="label">Required</div>
+        <h3>Server-Side Validation</h3>
+        <p>Validate IP addresses, durations, authorization, and request state on the backend.</p>
+      </div>
+      <div class="card">
+        <div class="label">Required</div>
+        <h3>Automatic Expiration</h3>
+        <p>Never depend on the browser remaining open to revoke access.</p>
+      </div>
+      <div class="card">
+        <div class="label">Required</div>
+        <h3>Rate Limiting</h3>
+        <p>Limit repeated requests and authentication attempts from the public internet.</p>
+      </div>
+      <div class="card">
+        <div class="label">Required</div>
+        <h3>Audit Logging</h3>
+        <p>Record who requested access, what source was authorized, when it started, and when it expired.</p>
+      </div>
+      <div class="card">
+        <div class="label">Recommended</div>
+        <h3>VPN Alternative</h3>
+        <p>For long-term remote administration, consider VPN access instead of exposing RDP directly.</p>
+      </div>
+    </div>
+
+    <div class="warning">
+      <strong>Do not put firewall credentials in this file.</strong>
+      <div>
+        This HTML is designed to live on a public website. API keys, firewall
+        addresses, server addresses, RDP credentials, and privileged automation
+        credentials belong exclusively on the protected backend.
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Future Integration Checklist</h2>
+    <div class="card">
+      <p>☐ Choose firewall platform / API method</p>
+      <p>☐ Create dedicated temporary RDP source alias</p>
+      <p>☐ Create permanent firewall rule referencing that alias</p>
+      <p>☐ Build protected backend endpoint</p>
+      <p>☐ Add authentication + MFA</p>
+      <p>☐ Implement IP detection and validation</p>
+      <p>☐ Implement automatic expiration</p>
+      <p>☐ Add audit logging</p>
+      <p>☐ Add rate limiting</p>
+      <p>☐ Test revocation and failure recovery</p>
+      <p>☐ Only then enable the public request form</p>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  ProtonCube · Remote Access Infrastructure · Public Portal Concept
+</footer>
+
+</body>
+</html>
