@@ -153,7 +153,6 @@
     <div class="heading"><div><h2>Network</h2></div><p>The switching and connectivity layer tying the homelab together.</p></div>
     <div class="grid">
       <a class="card" href="#network"><div class="icon">⌁</div><h3>Dell X1052</h3><p>48-port 1GbE managed switch with SFP+ uplinks, providing the primary managed switching layer.</p><span class="arrow">View switch →</span></a>
-      <a class="card" href="#network"><div class="icon">◆</div><h3>Cisco Nexus 3064-X</h3><p>48-port 10Gb SFP+ switching platform with 40Gb capability, used for high-speed lab networking and experimentation.</p><span class="arrow">View switch →</span></a>
       <a class="card" href="#network"><div class="icon">⌁</div><h3>Wi-Fi & Internet</h3><p>Wi-Fi 7 mesh networking with gigabit Internet connectivity across the home and homelab environment.</p><span class="arrow">View connectivity →</span></a>
     </div>
   </section>
