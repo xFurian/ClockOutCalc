@@ -1,63 +1,178 @@
-This Website is hosted on GitHub and was built by Aaron Draheim.
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Clock-Out Time Calculator | ProtonCube</title>
+  <meta name="description" content="CubeProton — technology, homelab infrastructure, projects, and useful tools.">
+  <title>CubeProton | Technology, Homelab & Projects</title>
   <style>
     :root {
-      --surface: #ffffff;
+      --bg: #f4f7fc;
+      --bg-soft: #eaf0fb;
+      --surface: rgba(255,255,255,.88);
+      --surface-solid: #ffffff;
       --text: #172033;
       --muted: #5d6b82;
       --primary: #1f5eff;
       --primary-dark: #1647c7;
       --border: #d9e2f2;
-      --shadow: 0 24px 60px rgba(23, 32, 51, .14);
+      --shadow: 0 24px 60px rgba(23,32,51,.12);
       --radius: 22px;
+      --header: rgba(255,255,255,.78);
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
 
     body {
       margin: 0;
-      font-family: Inter, Segoe UI, Arial, sans-serif;
-      background: radial-gradient(circle at top left, #dbe8ff, transparent 34%), linear-gradient(135deg, #f7faff 0%, #eef3fb 100%);
+      font-family: Inter, "Segoe UI", Arial, sans-serif;
       color: var(--text);
+      background:
+        radial-gradient(circle at 10% 0%, #dbe8ff 0, transparent 32%),
+        radial-gradient(circle at 90% 10%, #e7ddff 0, transparent 28%),
+        linear-gradient(135deg, #f8faff 0%, var(--bg) 100%);
       min-height: 100vh;
     }
 
     body.dark {
-      --surface: #1f2937;
-      --text: #f9fafb;
-      --muted: #cbd5e1;
+      --bg: #0b1120;
+      --bg-soft: #111a2d;
+      --surface: rgba(20,30,48,.9);
+      --surface-solid: #141e30;
+      --text: #f8fafc;
+      --muted: #b8c4d8;
       --primary: #7aa2ff;
       --primary-dark: #9bb9ff;
-      --border: #374151;
-      background: linear-gradient(135deg, #0b1120, #111827);
+      --border: #2d3b54;
+      --shadow: 0 24px 60px rgba(0,0,0,.35);
+      --header: rgba(11,17,32,.82);
     }
 
-    .page {
-      width: min(1120px, 92vw);
+    a { color: inherit; }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(18px);
+      background: var(--header);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav {
+      width: min(1160px, 92vw);
       margin: 0 auto;
-      padding: 48px 0;
+      min-height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .brand {
+      text-decoration: none;
+      font-size: 21px;
+      font-weight: 900;
+      letter-spacing: -.5px;
+    }
+
+    .brand span { color: var(--primary); }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .nav-item {
+      position: relative;
+    }
+
+    .nav-link, .nav-button {
+      appearance: none;
+      border: 0;
+      background: transparent;
+      color: var(--text);
+      text-decoration: none;
+      padding: 10px 12px;
+      border-radius: 10px;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 750;
+      cursor: pointer;
+    }
+
+    .nav-link:hover, .nav-button:hover {
+      background: var(--bg-soft);
+    }
+
+    .dropdown {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      width: 230px;
+      padding: 8px;
+      background: var(--surface-solid);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-5px);
+      transition: .18s ease;
+    }
+
+    .nav-item:hover .dropdown,
+    .nav-item:focus-within .dropdown {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .dropdown a {
+      display: block;
+      text-decoration: none;
+      padding: 11px 12px;
+      border-radius: 10px;
+    }
+
+    .dropdown a:hover { background: var(--bg-soft); }
+
+    .dropdown strong {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 3px;
+    }
+
+    .dropdown small {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .menu-toggle {
+      display: none;
+      border: 1px solid var(--border);
+      background: var(--surface-solid);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 9px 12px;
+      cursor: pointer;
+    }
+
+    main {
+      width: min(1160px, 92vw);
+      margin: 0 auto;
+      padding: 76px 0 40px;
     }
 
     .hero {
       display: grid;
-      grid-template-columns: 1.1fr .9fr;
-      gap: 36px;
+      grid-template-columns: 1.12fr .88fr;
+      gap: 42px;
       align-items: center;
-    }
-
-    .hero-actions,
-    .quick-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin: 18px 0;
+      min-height: 520px;
     }
 
     .eyebrow {
@@ -65,47 +180,59 @@ This Website is hosted on GitHub and was built by Aaron Draheim.
       padding: 8px 12px;
       border: 1px solid var(--border);
       border-radius: 999px;
-      background: rgba(255, 255, 255, .72);
+      background: var(--surface);
       color: var(--muted);
-      font-size: 14px;
-      font-weight: 700;
+      font-size: 13px;
+      font-weight: 800;
     }
 
     h1 {
-      font-size: clamp(42px, 6vw, 72px);
-      line-height: .95;
-      margin: 22px 0 18px;
-      letter-spacing: -2px;
+      font-size: clamp(46px, 7vw, 78px);
+      line-height: .96;
+      letter-spacing: -3px;
+      margin: 20px 0 20px;
+      max-width: 800px;
     }
 
+    h1 span { color: var(--primary); }
+
     .lead {
-      font-size: 20px;
-      line-height: 1.65;
+      max-width: 700px;
       color: var(--muted);
-      max-width: 670px;
+      font-size: 19px;
+      line-height: 1.7;
+      margin: 0;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 28px;
     }
 
     .btn {
       border: 0;
-      border-radius: 14px;
+      border-radius: 13px;
       padding: 14px 18px;
-      font-weight: 800;
-      font-size: 15px;
+      font-weight: 850;
+      font-size: 14px;
       cursor: pointer;
       text-decoration: none;
       display: inline-flex;
       align-items: center;
       justify-content: center;
+      transition: transform .15s ease, background .15s ease;
     }
+
+    .btn:hover { transform: translateY(-1px); }
 
     .btn-primary {
       background: var(--primary);
       color: #fff;
     }
 
-    .btn-primary:hover {
-      background: var(--primary-dark);
-    }
+    .btn-primary:hover { background: var(--primary-dark); }
 
     .btn-secondary {
       background: var(--surface);
@@ -113,307 +240,459 @@ This Website is hosted on GitHub and was built by Aaron Draheim.
       border: 1px solid var(--border);
     }
 
-    .card {
-      background: rgba(255, 255, 255, .82);
-      backdrop-filter: blur(18px);
+    .hero-card {
+      padding: 26px;
       border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-    }
-
-    body.dark .card {
-      background: rgba(31, 41, 55, .88);
-    }
-
-    .calculator {
-      padding: 28px;
-    }
-
-    .calculator-header {
-      margin-bottom: 16px;
-    }
-
-    .field {
-      margin: 16px 0;
-    }
-
-    .field label,
-    .settings label {
-      display: block;
-      font-weight: 800;
-      margin-bottom: 8px;
-    }
-
-    .field input {
-      width: 100%;
-      padding: 13px 14px;
-      border: 1px solid var(--border);
-      border-radius: 12px;
+      border-radius: 28px;
       background: var(--surface);
-      color: var(--text);
-      font-size: 16px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
     }
 
-    .settings {
-      display: block;
-      margin: 16px 0 20px;
-      padding: 16px;
-      border-radius: 16px;
-      border: 1px solid var(--border);
-      background: rgba(255, 255, 255, .52);
-    }
-
-    .settings strong {
-      display: block;
-      margin-bottom: 12px;
-    }
-
-    .summary {
-      color: var(--muted);
-      font-size: 14px;
-      text-align: center;
-    }
-
-    .result {
-      margin-top: 18px;
-      padding: 18px;
-      border-radius: 16px;
-      background: #edf4ff;
-      color: #0f326d;
-      font-size: 18px;
-      font-weight: 900;
-      text-align: center;
-    }
-
-    body.dark .result {
-      background: #172554;
+    .terminal {
+      border-radius: 18px;
+      background: #101827;
       color: #dbeafe;
+      padding: 20px;
+      overflow: hidden;
     }
 
-    .feature-grid {
+    .terminal-top {
+      display: flex;
+      gap: 7px;
+      margin-bottom: 18px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #64748b;
+    }
+
+    .terminal pre {
+      margin: 0;
+      white-space: pre-wrap;
+      font: 13px/1.8 Consolas, "Courier New", monospace;
+    }
+
+    .terminal .accent { color: #8ab4ff; }
+    .terminal .dim { color: #94a3b8; }
+
+    .section {
+      padding: 72px 0 10px;
+    }
+
+    .section-heading {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 22px;
+    }
+
+    .section-heading h2 {
+      margin: 0;
+      font-size: 32px;
+      letter-spacing: -1px;
+    }
+
+    .section-heading p {
+      margin: 0;
+      color: var(--muted);
+      max-width: 620px;
+      line-height: 1.6;
+    }
+
+    .grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 18px;
-      margin-top: 38px;
     }
 
-    .feature {
-      padding: 22px;
+    .card {
+      display: block;
+      padding: 24px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: 0 12px 32px rgba(23,32,51,.07);
+      text-decoration: none;
+      transition: transform .18s ease, box-shadow .18s ease;
     }
 
-    .feature p {
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow);
+    }
+
+    .icon {
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      border-radius: 13px;
+      background: var(--bg-soft);
+      margin-bottom: 18px;
+      font-size: 20px;
+    }
+
+    .card h3 {
+      margin: 0 0 8px;
+      font-size: 19px;
+    }
+
+    .card p {
+      margin: 0;
       color: var(--muted);
-    }
-
-    .footer {
-      margin-top: 38px;
-      text-align: center;
-      color: var(--muted);
+      line-height: 1.6;
       font-size: 14px;
     }
 
-    @media (max-width: 860px) {
-      .hero {
-        grid-template-columns: 1fr;
+    .card .arrow {
+      display: inline-block;
+      margin-top: 18px;
+      color: var(--primary);
+      font-weight: 850;
+      font-size: 14px;
+    }
+
+    .feature-band {
+      margin-top: 72px;
+      padding: 30px;
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      background: var(--surface);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .feature-band h2 { margin: 0 0 7px; }
+    .feature-band p { margin: 0; color: var(--muted); line-height: 1.6; }
+
+    footer {
+      width: min(1160px, 92vw);
+      margin: 65px auto 0;
+      padding: 26px 0 38px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      font-size: 13px;
+    }
+
+    @media (max-width: 850px) {
+      .nav-links {
+        display: none;
+        position: absolute;
+        left: 4vw;
+        right: 4vw;
+        top: 68px;
+        padding: 10px;
+        background: var(--surface-solid);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        box-shadow: var(--shadow);
+        flex-direction: column;
+        align-items: stretch;
       }
 
-      .feature-grid {
-        grid-template-columns: 1fr;
+      .nav-links.open { display: flex; }
+      .nav-item { width: 100%; }
+      .nav-link, .nav-button { width: 100%; text-align: left; }
+      .dropdown {
+        position: static;
+        display: none;
+        width: 100%;
+        box-shadow: none;
+        border: 0;
+        padding: 4px 8px;
+        opacity: 1;
+        visibility: visible;
+        transform: none;
+      }
+
+      .nav-item.open .dropdown { display: block; }
+      .menu-toggle { display: block; }
+
+      main { padding-top: 45px; }
+      .hero { grid-template-columns: 1fr; min-height: 0; }
+      .grid { grid-template-columns: 1fr; }
+      .section-heading, .feature-band, footer {
+        align-items: flex-start;
+        flex-direction: column;
       }
     }
   </style>
 </head>
 <body>
-  <main class="page">
-    <section class="hero">
-      <div>
-        <span class="eyebrow">Simple schedule planning, built for daily use</span>
-        <h1>Know exactly when your workday ends.</h1>
-        <p class="lead">Calculate your clock-out time from your start time, lunch duration, and workday length. Built for quick daily use with saved preferences and a clean, focused layout.</p>
-        <div class="hero-actions">
-          <a class="btn btn-primary" href="#calculator">Calculate clock-out time</a>
-          <a class="btn btn-secondary" href="https://www.protoncube.com/solitaire.html">Open Solitaire</a>
-        </div>
-      </div>
+  <header class="site-header">
+    <nav class="nav" aria-label="Main navigation">
+      <a class="brand" href="index.html">Proton<span>Cube</span></a>
 
-      <section class="card calculator" id="calculator" aria-label="Clock-out time calculator">
-        <div class="calculator-header">
-          <div>
-            <h2>Clock-Out Calculator</h2>
-            <p>Plan your day in seconds.</p>
+      <button class="menu-toggle" id="menuToggle" type="button" aria-expanded="false">
+        Menu
+      </button>
+
+      <div class="nav-links" id="navLinks">
+        <a class="nav-link" href="index.html">Home</a>
+
+        <div class="nav-item">
+          <button class="nav-button" type="button">Tools ▾</button>
+          <div class="dropdown">
+            <a href="clockout.html">
+              <strong>Clock-Out Calculator</strong>
+              <small>Plan your workday</small>
+            </a>
+            <a href="solitaire.html">
+              <strong>Solitaire</strong>
+              <small>A quick game</small>
+            </a>
           </div>
         </div>
 
-        <div class="settings open" id="settingsModal">
-          <strong>Preferences</strong>
-          <label><input type="checkbox" id="darkMode"> Dark mode</label>
-          <label><input type="checkbox" id="customHours"> Custom work hours</label>
-          <label><input type="checkbox" id="use24Hour"> 24-hour result format</label>
+        <div class="nav-item">
+          <button class="nav-button" type="button">Homelab ▾</button>
+          <div class="dropdown">
+            <a href="#homelab">
+              <strong>Infrastructure</strong>
+              <small>Servers, networking & systems</small>
+            </a>
+            <a href="#projects">
+              <strong>Projects</strong>
+              <small>Current and future builds</small>
+            </a>
+          </div>
         </div>
 
-        <div class="quick-actions">
-          <button class="btn btn-secondary" id="useCurrentTime" type="button">Use current time</button>
-          <button class="btn btn-secondary" id="resetCalculator" type="button">Reset calculator</button>
+        <div class="nav-item">
+          <button class="nav-button" type="button">Remote Access ▾</button>
+          <div class="dropdown">
+            <a href="#remote">
+              <strong>RDP Access</strong>
+              <small>Remote access portal</small>
+            </a>
+            <a href="#remote">
+              <strong>Access Status</strong>
+              <small>Check availability</small>
+            </a>
+          </div>
         </div>
 
-        <div class="field">
-          <label for="clockIn">Clock-in time</label>
-          <input type="time" id="clockIn" required>
+        <a class="nav-link" href="#about">About</a>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" aria-labelledby="welcome">
+      <div>
+        <span class="eyebrow">Technology • Homelab • Projects</span>
+        <h1 id="welcome">Welcome to <span>CubeProton.</span></h1>
+        <p class="lead">
+          A personal technology portal for useful tools, homelab infrastructure,
+          experiments, and projects built and maintained by Aaron Draheim.
+        </p>
+
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#tools">Explore the site</a>
+          <a class="btn btn-secondary" href="#homelab">View the homelab</a>
         </div>
+      </div>
 
-        <div class="field">
-          <label for="lunch">Lunch duration, in minutes</label>
-          <input type="number" id="lunch" value="30" min="0" step="5">
+      <div class="hero-card" aria-label="CubeProton overview">
+        <div class="terminal">
+          <div class="terminal-top">
+            <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          </div>
+          <pre><span class="dim">$</span> <span class="accent">cubeproton</span> --status
+
+<span class="dim">site:</span>      online
+<span class="dim">tools:</span>     available
+<span class="dim">homelab:</span>   online
+<span class="dim">projects:</span>   active
+
+<span class="accent">Ready for the next project.</span></pre>
         </div>
-
-        <div class="field" id="workHoursField">
-          <label for="workHours">Workday length, in hours</label>
-          <input type="number" id="workHours" value="8" min="1" max="24" step="0.5">
-        </div>
-
-        <button class="btn btn-primary" id="calculateButton" type="button">Calculate time</button>
-
-        <div class="result" id="result" role="status" aria-live="polite">Enter a start time to calculate your clock-out target.</div>
-        <p class="summary" id="summaryText">Current schedule: 8 work hours with a 30-minute lunch.</p>
-      </section>
+      </div>
     </section>
 
-    <section class="feature-grid" aria-label="Key benefits">
-      <article class="card feature">
-        <h3>Fast answer</h3>
-        <p>Get the exact clock-out target without manual math or repeated time conversions.</p>
-      </article>
+    <section class="section" id="tools">
+      <div class="section-heading">
+        <div>
+          <h2>Tools</h2>
+          <p>Small utilities and experiments available from the site.</p>
+        </div>
+      </div>
 
-      <article class="card feature">
-        <h3>No hidden controls</h3>
-        <p>Preferences are visible by default, making the page more reliable and easier to use.</p>
-      </article>
+      <div class="grid">
+        <a class="card" href="clockout.html">
+          <div class="icon">⏱</div>
+          <h3>Clock-Out Calculator</h3>
+          <p>Calculate your target clock-out time from your start time, lunch, and workday length.</p>
+          <span class="arrow">Open calculator →</span>
+        </a>
 
-      <article class="card feature">
-        <h3>Cleaner workflow</h3>
-        <p>Use current time, reset quickly, and press Enter to calculate without extra clicks.</p>
-      </article>
+        <a class="card" href="solitaire.html">
+          <div class="icon">♠</div>
+          <h3>Solitaire</h3>
+          <p>A simple browser-based card game for when you need a quick break.</p>
+          <span class="arrow">Play solitaire →</span>
+        </a>
+
+        <a class="card" href="#tools">
+          <div class="icon">＋</div>
+          <h3>More Tools</h3>
+          <p>Future utilities and experiments can live here as the site grows.</p>
+          <span class="arrow">Coming soon →</span>
+        </a>
+      </div>
     </section>
 
-    <p class="footer">Hosted on GitHub. Built by Aaron Draheim.</p>
+    <section class="section" id="homelab">
+      <div class="section-heading">
+        <div>
+          <h2>Homelab</h2>
+          <p>Infrastructure, networking, servers, virtualization, and the systems behind the projects.</p>
+        </div>
+      </div>
+
+      <div class="grid">
+        <a class="card" href="#homelab">
+          <div class="icon">▣</div>
+          <h3>Infrastructure</h3>
+          <p>Explore the servers, virtualization environment, storage, and supporting systems.</p>
+          <span class="arrow">Explore infrastructure →</span>
+        </a>
+
+        <a class="card" href="#homelab">
+          <div class="icon">⌘</div>
+          <h3>Networking</h3>
+          <p>Switching, routing, segmentation, services, and the network that connects it all.</p>
+          <span class="arrow">View network →</span>
+        </a>
+
+        <a class="card" href="#projects">
+          <div class="icon">⚙</div>
+          <h3>Systems & Labs</h3>
+          <p>Experiments involving Windows Server, identity, Proxmox, and other technologies.</p>
+          <span class="arrow">View projects →</span>
+        </a>
+      </div>
+    </section>
+
+    <section class="section" id="remote">
+      <div class="section-heading">
+        <div>
+          <h2>Remote Access</h2>
+          <p>A dedicated area for controlled access to homelab services. Access controls can be added here later.</p>
+        </div>
+      </div>
+
+      <div class="grid">
+        <a class="card" href="#remote">
+          <div class="icon">↗</div>
+          <h3>RDP Access</h3>
+          <p>Request temporary remote desktop access when the remote-access system is enabled.</p>
+          <span class="arrow">Access portal →</span>
+        </a>
+
+        <a class="card" href="#remote">
+          <div class="icon">⌁</div>
+          <h3>VPN</h3>
+          <p>Secure remote connectivity to services inside the homelab.</p>
+          <span class="arrow">VPN portal →</span>
+        </a>
+
+        <a class="card" href="#remote">
+          <div class="icon">●</div>
+          <h3>Access Status</h3>
+          <p>Check whether remote services are available and review access status.</p>
+          <span class="arrow">Check status →</span>
+        </a>
+      </div>
+    </section>
+
+    <section class="section" id="projects">
+      <div class="section-heading">
+        <div>
+          <h2>Projects</h2>
+          <p>Things currently being built, tested, learned, or improved.</p>
+        </div>
+      </div>
+
+      <div class="grid">
+        <a class="card" href="#projects">
+          <div class="icon">▤</div>
+          <h3>Identity & Access</h3>
+          <p>Active Directory, Entra ID, authentication, access management, and identity labs.</p>
+          <span class="arrow">View project →</span>
+        </a>
+
+        <a class="card" href="#projects">
+          <div class="icon">◈</div>
+          <h3>Virtualization</h3>
+          <p>Proxmox and server virtualization experiments across the homelab.</p>
+          <span class="arrow">View project →</span>
+        </a>
+
+        <a class="card" href="#projects">
+          <div class="icon">⚡</div>
+          <h3>Experiments</h3>
+          <p>Hardware, networking, automation, and whatever interesting problem comes next.</p>
+          <span class="arrow">View experiments →</span>
+        </a>
+      </div>
+    </section>
+
+    <section class="feature-band" id="about">
+      <div>
+        <h2>Built for the lab. Built to evolve.</h2>
+        <p>
+          CubeProton is a personal space for technology projects, practical tools,
+          and homelab infrastructure.
+        </p>
+      </div>
+      <button class="btn btn-secondary" id="themeToggle" type="button">Toggle dark mode</button>
+    </section>
   </main>
-<script>
-  const darkModeToggle = document.getElementById("darkMode");
-  const customHoursToggle = document.getElementById("customHours");
-  const use24HourToggle = document.getElementById("use24Hour");
-  const workHoursField = document.getElementById("workHoursField");
-  const clockInInput = document.getElementById("clockIn");
-  const lunchInput = document.getElementById("lunch");
-  const workHoursInput = document.getElementById("workHours");
-  const calculateButton = document.getElementById("calculateButton");
-  const useCurrentTimeButton = document.getElementById("useCurrentTime");
-  const resetCalculatorButton = document.getElementById("resetCalculator");
-  const result = document.getElementById("result");
-  const summaryText = document.getElementById("summaryText");
 
-  function loadPreferences() {
-    darkModeToggle.checked = localStorage.getItem("darkMode") === "true";
-    customHoursToggle.checked = localStorage.getItem("customHours") === "true";
-    use24HourToggle.checked = localStorage.getItem("use24Hour") === "true";
-    document.body.classList.toggle("dark", darkModeToggle.checked);
-    workHoursField.style.display = customHoursToggle.checked ? "block" : "none";
-    updateSummary();
-  }
+  <footer>
+    <span>© 2026 CubeProton · Built by Aaron Draheim</span>
+    <span>Personal technology & homelab portal</span>
+  </footer>
 
-  function savePreferences() {
-    localStorage.setItem("darkMode", darkModeToggle.checked);
-    localStorage.setItem("customHours", customHoursToggle.checked);
-    localStorage.setItem("use24Hour", use24HourToggle.checked);
-    loadPreferences();
-  }
+  <script>
+    const menuToggle = document.getElementById("menuToggle");
+    const navLinks = document.getElementById("navLinks");
+    const themeToggle = document.getElementById("themeToggle");
 
-  function updateSummary() {
-    const lunch = parseInt(lunchInput.value, 10) || 0;
-    const workHours = customHoursToggle.checked ? parseFloat(workHoursInput.value) || 8 : 8;
-    summaryText.textContent = `Current schedule: ${workHours} work hours with a ${lunch}-minute lunch.`;
-  }
-
-  function formatTime(date) {
-    let hours = date.getHours();
-    const minutes = String(date.getMinutes()).padStart(2, "0");
-
-    if (use24HourToggle.checked) {
-      return `${String(hours).padStart(2, "0")}:${minutes}`;
-    }
-
-    const ampm = hours >= 12 ? "PM" : "AM";
-    hours = hours % 12 || 12;
-
-    return `${hours}:${minutes} ${ampm}`;
-  }
-
-  function calculateClockOut() {
-    const clockIn = clockInInput.value;
-    const lunch = parseInt(lunchInput.value, 10);
-    const workHours = customHoursToggle.checked ? parseFloat(workHoursInput.value) : 8;
-
-    if (!clockIn) {
-      result.textContent = "Please enter a valid clock-in time first.";
-      return;
-    }
-
-    if (Number.isNaN(lunch) || lunch < 0) {
-      result.textContent = "Lunch duration must be zero minutes or greater.";
-      return;
-    }
-
-    if (Number.isNaN(workHours) || workHours <= 0 || workHours > 24) {
-      result.textContent = "Workday length must be between 1 and 24 hours.";
-      return;
-    }
-
-    const [hours, minutes] = clockIn.split(":").map(Number);
-    const startDate = new Date();
-    startDate.setHours(hours, minutes, 0, 0);
-
-    const totalMinutes = (workHours * 60) + lunch;
-    const endDate = new Date(startDate.getTime() + totalMinutes * 60000);
-
-    result.textContent = `Your target clock-out time is ${formatTime(endDate)}.`;
-    updateSummary();
-  }
-
-  function useCurrentTime() {
-    const now = new Date();
-    clockInInput.value = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
-    calculateClockOut();
-  }
-
-  function resetCalculator() {
-    clockInInput.value = "";
-    lunchInput.value = "30";
-    workHoursInput.value = "8";
-    result.textContent = "Enter a start time to calculate your clock-out target.";
-    updateSummary();
-  }
-
-  calculateButton.addEventListener("click", calculateClockOut);
-  useCurrentTimeButton.addEventListener("click", useCurrentTime);
-  resetCalculatorButton.addEventListener("click", resetCalculator);
-
-  darkModeToggle.addEventListener("change", savePreferences);
-  customHoursToggle.addEventListener("change", savePreferences);
-  use24HourToggle.addEventListener("change", savePreferences);
-
-  clockInInput.addEventListener("input", updateSummary);
-  lunchInput.addEventListener("input", updateSummary);
-  workHoursInput.addEventListener("input", updateSummary);
-
-  [clockInInput, lunchInput, workHoursInput].forEach(function (input) {
-    input.addEventListener("keydown", function (event) {
-      if (event.key === "Enter") {
-        calculateClockOut();
-      }
+    menuToggle.addEventListener("click", () => {
+      const open = navLinks.classList.toggle("open");
+      menuToggle.setAttribute("aria-expanded", open);
     });
-  });
 
-  loadPreferences();
-</script>
+    document.querySelectorAll(".nav-button").forEach(button => {
+      button.addEventListener("click", () => {
+        if (window.innerWidth <= 850) {
+          button.parentElement.classList.toggle("open");
+        }
+      });
+    });
+
+    function setTheme(dark) {
+      document.body.classList.toggle("dark", dark);
+      localStorage.setItem("darkMode", dark ? "true" : "false");
+    }
+
+    setTheme(localStorage.getItem("darkMode") === "true");
+
+    themeToggle.addEventListener("click", () => {
+      setTheme(!document.body.classList.contains("dark"));
+    });
+  </script>
 </body>
 </html>
-
