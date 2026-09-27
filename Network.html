@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Orbi 770 WiFi 7 Mesh | ProtonCube</title>
+<meta name="description" content="ProtonCube homelab documentation for the NETGEAR Orbi 770 Series WiFi 7 mesh system.">
+<style>
+:root{
+  --bg:#f5f7fb; --surface:#fff; --surface2:#eef3f9; --text:#172033;
+  --muted:#64748b; --accent:#2563eb; --accent2:#0ea5e9; --border:#dbe3ee;
+  --shadow:0 12px 35px rgba(15,23,42,.08);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+a{color:inherit;text-decoration:none}
+nav{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.9);backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+.nav-inner{max-width:1180px;margin:auto;padding:14px 22px;display:flex;align-items:center;justify-content:space-between}
+.brand{font-weight:800;font-size:1.2rem;letter-spacing:.2px}.brand span{color:var(--accent)}
+.nav-links{display:flex;gap:22px;align-items:center}.nav-links a{font-size:.92rem;color:var(--muted);font-weight:600}.nav-links a:hover{color:var(--accent)}
+.hero{max-width:1180px;margin:auto;padding:78px 22px 54px}
+.eyebrow{display:inline-block;background:#dbeafe;color:#1d4ed8;padding:6px 11px;border-radius:999px;font-size:.78rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+h1{font-size:clamp(2.5rem,6vw,4.7rem);line-height:1.02;margin:18px 0 16px;letter-spacing:-.05em}
+.hero p{max-width:720px;color:var(--muted);font-size:1.08rem}
+.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}
+.btn{display:inline-block;padding:11px 16px;border-radius:10px;font-weight:700;border:1px solid var(--border);background:var(--surface)}
+.btn.primary{background:var(--accent);color:white;border-color:var(--accent)}
+.container{max-width:1180px;margin:auto;padding:0 22px 70px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:0 0 52px}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px;box-shadow:var(--shadow)}
+.stat strong{display:block;font-size:1.55rem}.stat span{color:var(--muted);font-size:.88rem}
+section{margin-top:58px}h2{font-size:1.75rem;margin:0 0 10px;letter-spacing:-.025em}
+.section-intro{color:var(--muted);max-width:760px;margin:0 0 22px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:23px;box-shadow:var(--shadow)}
+.card h3{margin:0 0 8px;font-size:1.08rem}.card p{margin:0;color:var(--muted);font-size:.94rem}
+.card .label{font-size:.72rem;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.callout{margin-top:24px;background:linear-gradient(135deg,#eff6ff,#f0f9ff);border:1px solid #bfdbfe;border-radius:18px;padding:24px}
+.callout strong{display:block;margin-bottom:5px}
+.specs{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.spec{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:17px 19px}
+.spec b{display:block;margin-bottom:3px}.spec span{color:var(--muted);font-size:.92rem}
+footer{border-top:1px solid var(--border);padding:30px 22px;color:var(--muted);text-align:center;font-size:.85rem}
+@media(max-width:800px){.stats,.grid,.specs{grid-template-columns:1fr 1fr}.nav-links{display:none}}
+@media(max-width:540px){.stats,.grid,.specs{grid-template-columns:1fr}.hero{padding-top:55px}h1{font-size:3rem}}
+@media(prefers-color-scheme:dark){
+:root{--bg:#0b1220;--surface:#111a2b;--surface2:#182338;--text:#e7edf7;--muted:#9aa8bd;--border:#26354c;--shadow:0 12px 35px rgba(0,0,0,.22)}
+nav{background:rgba(11,18,32,.9)}.eyebrow{background:#172554;color:#93c5fd}.callout{background:#101f39;border-color:#1d4ed8}.btn{background:var(--surface)}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a class="brand" href="index.html">Proton<span>Cube</span></a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="homelab.html">Homelab</a>
+      <a href="homelab.html#network">Network</a>
+      <a href="homelab.html#remote">Remote Access</a>
+      <a href="index.html#about">About</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <span class="eyebrow">Network Infrastructure</span>
+  <h1>Orbi 770<br>WiFi 7 Mesh</h1>
+  <p>
+    The wireless networking layer of the ProtonCube homelab. The NETGEAR Orbi 770
+    Series provides tri-band WiFi 7, multi-gigabit Ethernet, mesh coverage,
+    and centralized home-network management.
+  </p>
+  <div class="actions">
+    <a class="btn primary" href="homelab.html">← Back to Homelab</a>
+    <a class="btn" href="x1052.html">View Dell X1052 →</a>
+  </div>
+</header>
+
+<main class="container">
+
+  <div class="stats">
+    <div class="stat"><strong>WiFi 7</strong><span>Tri-band wireless platform</span></div>
+    <div class="stat"><strong>BE11000</strong><span>Up to 11 Gbps combined WiFi rate</span></div>
+    <div class="stat"><strong>2.5 GbE</strong><span>Multi-gigabit wired connectivity</span></div>
+    <div class="stat"><strong>6 GHz</strong><span>WiFi 7 high-band spectrum</span></div>
+  </div>
+
+  <section>
+    <h2>System Overview</h2>
+    <p class="section-intro">
+      Orbi 770 is a tri-band WiFi 7 mesh platform designed to provide whole-home
+      wireless coverage while retaining multi-gigabit wired connectivity.
+    </p>
+    <div class="grid">
+      <div class="card">
+        <div class="label">Platform</div>
+        <h3>NETGEAR Orbi 770 Series</h3>
+        <p>Tri-band WiFi 7 mesh system using 2.4 GHz, 5 GHz, and 6 GHz wireless bands.</p>
+      </div>
+      <div class="card">
+        <div class="label">Wireless</div>
+        <h3>WiFi 7 / BE11000</h3>
+        <p>Supports WiFi 7 features including Multi-Link Operation, 320 MHz channels, and 4K-QAM.</p>
+      </div>
+      <div class="card">
+        <div class="label">Topology</div>
+        <h3>Mesh Networking</h3>
+        <p>Router-and-satellite architecture with wireless or optional multi-gig Ethernet backhaul.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Wireless Architecture</h2>
+    <div class="grid">
+      <div class="card">
+        <div class="label">2.4 GHz</div>
+        <h3>Longer-Range Coverage</h3>
+        <p>Lower-frequency wireless connectivity for compatible clients and broader home coverage.</p>
+      </div>
+      <div class="card">
+        <div class="label">5 GHz</div>
+        <h3>High-Speed Client Access</h3>
+        <p>High-throughput wireless connectivity for modern devices, streaming, gaming, and general network traffic.</p>
+      </div>
+      <div class="card">
+        <div class="label">6 GHz</div>
+        <h3>WiFi 7 Capacity</h3>
+        <p>Higher-bandwidth WiFi 7 connectivity for compatible 6 GHz clients and reduced congestion.</p>
+      </div>
+    </div>
+    <div class="callout">
+      <strong>Multi-Link Operation</strong>
+      Orbi 770 supports WiFi 7 Multi-Link Operation, allowing compatible connections to make use
+      of multiple wireless links to improve throughput, reliability, and latency characteristics.
+    </div>
+  </section>
+
+  <section>
+    <h2>Router Hardware</h2>
+    <div class="specs">
+      <div class="spec"><b>Model</b><span>Orbi RBE771 router</span></div>
+      <div class="spec"><b>Processor</b><span>Quad-core 1.5 GHz</span></div>
+      <div class="spec"><b>WAN</b><span>1 × 10/100/1000/2500 Mbps</span></div>
+      <div class="spec"><b>LAN</b><span>3 × 10/100/1000/2500 Mbps</span></div>
+      <div class="spec"><b>Wireless</b><span>Tri-band WiFi 7 / BE11000</span></div>
+      <div class="spec"><b>Router Coverage</b><span>Up to 2,750 sq. ft. per router</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Satellite Hardware</h2>
+    <div class="specs">
+      <div class="spec"><b>Model</b><span>Orbi RBE770 satellite</span></div>
+      <div class="spec"><b>Wireless</b><span>Tri-band WiFi 7 / BE11000</span></div>
+      <div class="spec"><b>Ethernet</b><span>2 × 10/100/1000/2500 Mbps LAN</span></div>
+      <div class="spec"><b>Coverage</b><span>Up to 2,750 sq. ft. per satellite</span></div>
+      <div class="spec"><b>Backhaul</b><span>Wireless MLO or optional multi-gig wired backhaul</span></div>
+      <div class="spec"><b>Physical Size</b><span>9.88 × 5.28 × 3.95 in per unit</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Network Role</h2>
+    <div class="grid">
+      <div class="card">
+        <div class="label">Gateway</div>
+        <h3>Internet Edge</h3>
+        <p>Provides the primary routing and wireless access layer for the home network.</p>
+      </div>
+      <div class="card">
+        <div class="label">Wireless</div>
+        <h3>Whole-Home WiFi</h3>
+        <p>Extends wireless connectivity through the home using the Orbi mesh architecture.</p>
+      </div>
+      <div class="card">
+        <div class="label">Wired</div>
+        <h3>Multi-Gig Ethernet</h3>
+        <p>2.5GbE interfaces support high-speed wired clients and optional wired satellite backhaul.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Security & Management</h2>
+    <div class="grid">
+      <div class="card">
+        <div class="label">Management</div>
+        <h3>Orbi App</h3>
+        <p>Centralized setup and management through NETGEAR's Orbi management platform.</p>
+      </div>
+      <div class="card">
+        <div class="label">Network Segmentation</div>
+        <h3>Main / IoT / Guest</h3>
+        <p>Separate wireless networks are available for primary devices, IoT equipment, and guests.</p>
+      </div>
+      <div class="card">
+        <div class="label">Security</div>
+        <h3>Built-In Protection</h3>
+        <p>NETGEAR provides Advanced Router Protection and automatic firmware update capabilities.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>ProtonCube Notes</h2>
+    <div class="callout">
+      <strong>Current Homelab Role</strong>
+      The Orbi 770 serves as the wireless/router layer of the lab, while the Dell X1052
+      provides managed wired switching. This page intentionally excludes management IPs,
+      SSIDs, passwords, hostnames, and other private infrastructure details.
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  ProtonCube · Homelab Network Infrastructure
+</footer>
+
+</body>
+</html>
