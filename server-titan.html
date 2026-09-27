@@ -1,29 +1,408 @@
-🖥️ Titan 1
-• System: Supermicro X9DRT
-• CPU: 2× Intel Xeon E5-2670 v2
-• Generation: Ivy Bridge-EP
-• Cores: 20 physical cores total
-• Threads: 40 logical processors total
-• CPU Speed: 2.50 GHz
-• RAM: 49,152 MB (~48 GB)
-• OS: Windows Server 2019 Datacenter Evaluation 64-bit
-• BIOS: 04.06.05 — 08/04/2015
-🖥️ Titan 2
-• System: Supermicro SYS-6027TR-DTRF-01LCO19
-• CPU: 2× Intel Xeon E5-2670 v2
-• Generation: Ivy Bridge-EP
-• Cores: 20 physical cores total
-• Threads: 40 logical processors total
-• CPU Speed: 2.50 GHz
-• RAM: 40,960 MB (~40 GB)
-• OS: Windows Server 2019 Datacenter Evaluation 64-bit
-• BIOS: 04.06.05 — 08/04/2015
-• Hyper-Threading: Enabled
-• Active Processor Cores: All
-🔥 Combined
-Titan 1 + Titan 2 =
-• 4× Xeon E5-2670 v2
-• 40 physical CPU cores
-• 80 logical threads
-• ~88 GB RAM
-Both Titans are confirmed to have the same E5-2670 v2 CPUs.
+<!-- =========================================================
+     TITAN 1
+     ========================================================= -->
+<section class="lab-section" id="titan-1">
+    <div class="section-heading">
+        <span class="eyebrow">SERVERS &amp; COMPUTE</span>
+        <h2>🖥️ Titan 1</h2>
+        <p>Supermicro virtualization and Windows Server system.</p>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <span class="stat-value">20</span>
+            <span class="stat-label">Physical Cores</span>
+        </div>
+
+        <div class="stat-card">
+            <span class="stat-value">40</span>
+            <span class="stat-label">Logical Threads</span>
+        </div>
+
+        <div class="stat-card">
+            <span class="stat-value">48 GB</span>
+            <span class="stat-label">RAM</span>
+        </div>
+
+        <div class="stat-card">
+            <span class="stat-value">2×</span>
+            <span class="stat-label">Xeon E5-2670 v2</span>
+        </div>
+    </div>
+
+    <div class="card-grid">
+
+        <!-- System -->
+        <div class="card">
+            <div class="card-icon">🖥️</div>
+            <h3>System</h3>
+
+            <div class="spec-list">
+                <div class="spec-row">
+                    <span>Platform</span>
+                    <strong>Supermicro X9DRT</strong>
+                </div>
+
+                <div class="spec-row">
+                    <span>CPU</span>
+                    <strong>2× Intel Xeon E5-2670 v2</strong>
+                </div>
+
+                <div class="spec-row">
+                    <span>Generation</span>
+                    <strong>Ivy Bridge-EP</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- CPU -->
+        <div class="card">
+            <div class="card-icon">⚙️</div>
+            <h3>CPU</h3>
+
+            <div class="spec-list">
+                <div class="spec-row">
+                    <span>Processors</span>
+                    <strong>2× Intel Xeon E5-2670 v2</strong>
+                </div>
+
+                <div class="spec-row">
+                    <span>Physical Cores</span>
+                    <strong>20</strong>
+                </div>
+
+                <div class="spec-row">
+                    <span>Logical Processors</span>
+                    <strong>40</strong>
+                </div>
+
+                <div class="spec-row">
+                    <span>CPU Speed</span>
+                    <strong>2.50 GHz</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- Memory -->
+        <div class="card">
+            <div class="card-icon">🧠</div>
+            <h3>Memory</h3>
+
+            <div class="spec-list">
+                <div class="spec-row">
+                    <span>Installed RAM</span>
+                    <strong>49,152 MB</strong>
+                </div>
+
+                <div class="spec-row">
+                    <span>Approximate RAM</span>
+                    <strong>48 GB</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- OS -->
+        <div class="card">
+            <div class="card-icon">🪟</div>
+            <h3>Operating System</h3>
+
+            <div class="spec-list">
+                <div class="spec-row">
+                    <span>OS</span>
+                    <strong>Windows Server 2019</strong>
+                </div>
+
+                <div class="spec-row">
+                    <span>Edition</span>
+                    <strong>Datacenter Evaluation</strong>
+                </div>
+
+                <div class="spec-row">
+                    <span>Architecture</span>
+                    <strong>64-bit</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- BIOS -->
+        <div class="card">
+            <div class="card-icon">🔧</div>
+            <h3>BIOS</h3>
+
+            <div class="spec-list">
+                <div class="spec-row">
+                    <span>Version</span>
+                    <strong>04.06.05</strong>
+                </div>
+
+                <div class="spec-row">
+                    <span>Date</span>
+                    <strong>08/04/2015</strong>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+
+<!-- =========================================================
+     TITAN 2
+     ========================================================= -->
+<section class="lab-section" id="titan-2">
+    <div class="section-heading">
+        <span class="eyebrow">SERVERS &amp; COMPUTE</span>
+        <h2>🖥️ Titan 2</h2>
+        <p>Supermicro rack server running Windows Server 2019.</p>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <span class="stat-value">20</span>
+            <span class="stat-label">Physical Cores</span>
+        </div>
+
+        <div class="stat-card">
+            <span class="stat-value">40</span>
+            <span class="stat-label">Logical Threads</span>
+        </div>
+
+        <div class="stat-card">
+            <span class="stat-value">40 GB</span>
+            <span class="stat-label">RAM</span>
+        </div>
+
+        <div class="stat-card">
+            <span class="stat-value">2×</span>
+            <span class="stat-label">Xeon E5-2670 v2</span>
+        </div>
+    </div>
+
+    <div class="card-grid">
+
+        <!-- System -->
+        <div class="card">
+            <div class="card-icon">🖥️</div>
+            <h3>System</h3>
+
+            <div class="spec-list">
+                <div class="spec-row">
+                    <span>Platform</span>
+                    <strong>Supermicro SYS-6027TR-DTRF-01LCO19</strong>
+                </div>
+
+                <div class="spec-row">
+                    <span>CPU</span>
+                    <strong>2× Intel Xeon E5-2670 v2</strong>
+                </div>
+
+                <div class="spec-row">
+                    <span>Generation</span>
+                    <strong>Ivy Bridge-EP</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- CPU -->
+        <div class="card">
+            <div class="card-icon">⚙️</div>
+            <h3>CPU</h3>
+
+            <div class="spec-list">
+                <div class="spec-row">
+                    <span>Processors</span>
+                    <strong>2× Intel Xeon E5-2670 v2</strong>
+                </div>
+
+                <div class="spec-row">
+                    <span>Physical Cores</span>
+                    <strong>20</strong>
+                </div>
+
+                <div class="spec-row">
+                    <span>Logical Processors</span>
+                    <strong>40</strong>
+                </div>
+
+                <div class="spec-row">
+                    <span>CPU Speed</span>
+                    <strong>2.50 GHz</strong>
+                </div>
+
+                <div class="spec-row">
+                    <span>Hyper-Threading</span>
+                    <strong>Enabled</strong>
+                </div>
+
+                <div class="spec-row">
+                    <span>Active Processor Cores</span>
+                    <strong>All</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- Memory -->
+        <div class="card">
+            <div class="card-icon">🧠</div>
+            <h3>Memory</h3>
+
+            <div class="spec-list">
+                <div class="spec-row">
+                    <span>Installed RAM</span>
+                    <strong>40,960 MB</strong>
+                </div>
+
+                <div class="spec-row">
+                    <span>Approximate RAM</span>
+                    <strong>40 GB</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- OS -->
+        <div class="card">
+            <div class="card-icon">🪟</div>
+            <h3>Operating System</h3>
+
+            <div class="spec-list">
+                <div class="spec-row">
+                    <span>OS</span>
+                    <strong>Windows Server 2019</strong>
+                </div>
+
+                <div class="spec-row">
+                    <span>Edition</span>
+                    <strong>Datacenter Evaluation</strong>
+                </div>
+
+                <div class="spec-row">
+                    <span>Architecture</span>
+                    <strong>64-bit</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- BIOS -->
+        <div class="card">
+            <div class="card-icon">🔧</div>
+            <h3>BIOS</h3>
+
+            <div class="spec-list">
+                <div class="spec-row">
+                    <span>Version</span>
+                    <strong>04.06.05</strong>
+                </div>
+
+                <div class="spec-row">
+                    <span>Date</span>
+                    <strong>08/04/2015</strong>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+
+<!-- =========================================================
+     COMBINED TITAN RESOURCES
+     ========================================================= -->
+<section class="lab-section" id="titan-combined">
+    <div class="section-heading">
+        <span class="eyebrow">COMBINED RESOURCES</span>
+        <h2>🔥 Titan 1 + Titan 2</h2>
+        <p>Combined CPU and memory resources across both Titan systems.</p>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <span class="stat-value">4×</span>
+            <span class="stat-label">Xeon E5-2670 v2</span>
+        </div>
+
+        <div class="stat-card">
+            <span class="stat-value">40</span>
+            <span class="stat-label">Physical Cores</span>
+        </div>
+
+        <div class="stat-card">
+            <span class="stat-value">80</span>
+            <span class="stat-label">Logical Threads</span>
+        </div>
+
+        <div class="stat-card">
+            <span class="stat-value">~88 GB</span>
+            <span class="stat-label">Combined RAM</span>
+        </div>
+    </div>
+
+    <div class="card-grid">
+
+        <div class="card">
+            <div class="card-icon">⚙️</div>
+            <h3>Combined CPU</h3>
+
+            <div class="spec-list">
+                <div class="spec-row">
+                    <span>Processors</span>
+                    <strong>4× Intel Xeon E5-2670 v2</strong>
+                </div>
+
+                <div class="spec-row">
+                    <span>Physical Cores</span>
+                    <strong>40</strong>
+                </div>
+
+                <div class="spec-row">
+                    <span>Logical Threads</span>
+                    <strong>80</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-icon">🧠</div>
+            <h3>Combined Memory</h3>
+
+            <div class="spec-list">
+                <div class="spec-row">
+                    <span>Titan 1</span>
+                    <strong>~48 GB</strong>
+                </div>
+
+                <div class="spec-row">
+                    <span>Titan 2</span>
+                    <strong>~40 GB</strong>
+                </div>
+
+                <div class="spec-row">
+                    <span>Total</span>
+                    <strong>~88 GB</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-icon">🖥️</div>
+            <h3>CPU Confirmation</h3>
+
+            <div class="spec-list">
+                <div class="spec-row">
+                    <span>Titan 1</span>
+                    <strong>E5-2670 v2</strong>
+                </div>
+
+                <div class="spec-row">
+                    <span>Titan 2</span>
+                    <strong>E5-2670 v2</strong>
+                </div>
+
+                <div class="spec-row">
+                    <span>Status</span>
+                    <strong>Same CPU Generation</strong>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
