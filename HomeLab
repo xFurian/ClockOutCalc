@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="CubeProton Homelab — servers, networking, virtualization, storage, and infrastructure.">
+  <title>Homelab | CubeProton</title>
+  <style>
+    :root {
+      --bg:#f4f7fc; --surface:rgba(255,255,255,.9); --solid:#fff;
+      --text:#172033; --muted:#5d6b82; --primary:#1f5eff;
+      --primary-dark:#1647c7; --border:#d9e2f2; --soft:#eaf0fb;
+      --shadow:0 24px 60px rgba(23,32,51,.12); --radius:22px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;font-family:Inter,"Segoe UI",Arial,sans-serif;color:var(--text);
+      background:radial-gradient(circle at 10% 0%,#dbe8ff,transparent 32%),
+                 radial-gradient(circle at 90% 10%,#e7ddff,transparent 28%),
+                 linear-gradient(135deg,#f8faff,var(--bg));min-height:100vh
+    }
+    body.dark{
+      --bg:#0b1120;--surface:rgba(20,30,48,.92);--solid:#141e30;
+      --text:#f8fafc;--muted:#b8c4d8;--primary:#7aa2ff;
+      --primary-dark:#9bb9ff;--border:#2d3b54;--soft:#111a2d;
+      --shadow:0 24px 60px rgba(0,0,0,.35)
+    }
+    a{color:inherit}
+    header{position:sticky;top:0;z-index:20;background:var(--surface);backdrop-filter:blur(18px);border-bottom:1px solid var(--border)}
+    nav{width:min(1160px,92vw);margin:auto;min-height:72px;display:flex;align-items:center;justify-content:space-between}
+    .brand{font-size:21px;font-weight:900;text-decoration:none}.brand span{color:var(--primary)}
+    .links{display:flex;gap:6px;align-items:center}
+    .links a,.navbtn{padding:10px 12px;border:0;border-radius:10px;background:transparent;color:var(--text);text-decoration:none;font:inherit;font-size:14px;font-weight:750;cursor:pointer}
+    .links a:hover,.navbtn:hover{background:var(--soft)}
+    .item{position:relative}.drop{position:absolute;top:calc(100% + 8px);left:0;width:225px;padding:8px;background:var(--solid);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);opacity:0;visibility:hidden;transform:translateY(-5px);transition:.18s}
+    .item:hover .drop,.item:focus-within .drop{opacity:1;visibility:visible;transform:none}
+    .drop a{display:block;padding:11px 12px}.drop a:hover{background:var(--soft)}
+    .drop strong,.drop small{display:block}.drop small{font-size:12px;color:var(--muted);margin-top:3px}
+    .menu{display:none;border:1px solid var(--border);background:var(--solid);color:var(--text);border-radius:10px;padding:9px 12px}
+    main{width:min(1160px,92vw);margin:auto;padding:64px 0 20px}
+    .hero{display:grid;grid-template-columns:1.15fr .85fr;gap:38px;align-items:center}
+    .eyebrow{display:inline-flex;padding:8px 12px;border:1px solid var(--border);border-radius:999px;background:var(--surface);color:var(--muted);font-size:13px;font-weight:800}
+    h1{font-size:clamp(45px,7vw,76px);line-height:.96;letter-spacing:-3px;margin:20px 0}
+    h1 span{color:var(--primary)}
+    .lead{font-size:19px;line-height:1.7;color:var(--muted);max-width:700px;margin:0}
+    .hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:27px}
+    .btn{display:inline-flex;align-items:center;justify-content:center;padding:13px 17px;border-radius:13px;text-decoration:none;font-size:14px;font-weight:850;cursor:pointer;border:1px solid var(--border)}
+    .primary{background:var(--primary);color:#fff;border-color:var(--primary)}.secondary{background:var(--surface);color:var(--text)}
+    .hero-card,.card,.stat{background:var(--surface);border:1px solid var(--border);box-shadow:0 12px 32px rgba(23,32,51,.07);backdrop-filter:blur(16px)}
+    .hero-card{padding:25px;border-radius:28px}
+    .rack{
+      border-radius:18px;background:#101827;color:#dbeafe;padding:20px;font:13px/1.75 Consolas,"Courier New",monospace
+    }
+    .rack-top{display:flex;justify-content:space-between;border-bottom:1px solid #334155;padding-bottom:12px;margin-bottom:14px}
+    .lights{display:flex;gap:5px}.light{width:8px;height:8px;border-radius:50%;background:#64748b}
+    .line{padding:5px 0;border-bottom:1px solid rgba(148,163,184,.12)}
+    .on{color:#8ab4ff}.dim{color:#94a3b8}
+    .section{padding-top:70px}
+    .heading{display:flex;justify-content:space-between;align-items:end;gap:25px;margin-bottom:22px}
+    h2{font-size:32px;letter-spacing:-1px;margin:0}.heading p{margin:0;max-width:650px;color:var(--muted);line-height:1.6}
+    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+    .stat{padding:20px;border-radius:18px}.stat b{display:block;font-size:25px}.stat span{display:block;color:var(--muted);font-size:13px;margin-top:5px}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+    .card{display:block;padding:23px;border-radius:var(--radius);text-decoration:none;transition:.18s}
+    .card:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+    .icon{width:44px;height:44px;display:grid;place-items:center;border-radius:13px;background:var(--soft);margin-bottom:17px;font-size:20px}
+    .card h3{margin:0 0 8px;font-size:19px}.card p{margin:0;color:var(--muted);line-height:1.6;font-size:14px}.arrow{display:inline-block;margin-top:17px;color:var(--primary);font-weight:850;font-size:14px}
+    .server{margin-top:18px;padding:22px;border:1px solid var(--border);border-radius:18px;background:var(--surface);display:grid;grid-template-columns:1fr auto;gap:18px;align-items:center}
+    .server h3{margin:0 0 7px}.server p{margin:0;color:var(--muted);font-size:14px;line-height:1.5}.badge{padding:7px 10px;border-radius:999px;background:var(--soft);font-size:12px;font-weight:800;white-space:nowrap}
+    .band{margin-top:70px;padding:30px;border:1px solid var(--border);border-radius:24px;background:var(--surface);display:flex;justify-content:space-between;gap:25px;align-items:center}.band h2{font-size:24px}.band p{margin:7px 0 0;color:var(--muted);line-height:1.6}
+    footer{width:min(1160px,92vw);margin:65px auto 0;padding:25px 0 38px;border-top:1px solid var(--border);color:var(--muted);font-size:13px;display:flex;justify-content:space-between;gap:20px}
+    @media(max-width:850px){
+      .links{display:none;position:absolute;left:4vw;right:4vw;top:68px;padding:10px;background:var(--solid);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);flex-direction:column;align-items:stretch}.links.open{display:flex}.links a,.navbtn{width:100%;text-align:left}.menu{display:block}.item{width:100%}.drop{position:static;display:none;width:100%;box-shadow:none;border:0}.item.open .drop{display:block}
+      .hero{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}.heading,.band,footer{align-items:flex-start;flex-direction:column}
+    }
+    @media(max-width:500px){.stats{grid-template-columns:1fr}main{padding-top:42px}h1{letter-spacing:-2px}}
+  </style>
+</head>
+<body>
+<header>
+  <nav>
+    <a class="brand" href="index.html">Proton<span>Cube</span></a>
+    <button class="menu" id="menu" type="button">Menu</button>
+    <div class="links" id="links">
+      <a href="index.html">Home</a>
+      <div class="item"><button class="navbtn">Tools ▾</button><div class="drop">
+        <a href="clockout.html"><strong>Clock-Out Calculator</strong><small>Plan your workday</small></a>
+        <a href="solitaire.html"><strong>Solitaire</strong><small>A quick game</small></a>
+      </div></div>
+      <div class="item"><button class="navbtn">Homelab ▾</button><div class="drop">
+        <a href="homelab.html"><strong>Overview</strong><small>Infrastructure & systems</small></a>
+        <a href="#servers"><strong>Servers</strong><small>Compute & virtualization</small></a>
+        <a href="#network"><strong>Network</strong><small>Switching & connectivity</small></a>
+      </div></div>
+      <div class="item"><button class="navbtn">Remote Access ▾</button><div class="drop">
+        <a href="index.html#remote"><strong>RDP Access</strong><small>Remote access portal</small></a>
+        <a href="index.html#remote"><strong>Access Status</strong><small>Service status</small></a>
+      </div></div>
+      <a href="index.html#about">About</a>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <section class="hero">
+    <div>
+      <span class="eyebrow">CubeProton Homelab</span>
+      <h1>Built, tested, and <span>always evolving.</span></h1>
+      <p class="lead">
+        A look inside the infrastructure powering CubeProton — servers, networking,
+        virtualization, storage, identity services, and the experiments that happen behind the scenes.
+      </p>
+      <div class="hero-actions">
+        <a class="btn primary" href="#servers">Explore servers</a>
+        <a class="btn secondary" href="#network">View network</a>
+      </div>
+    </div>
+
+    <div class="hero-card">
+      <div class="rack">
+        <div class="rack-top"><span>HOMELAB / STATUS</span><span class="lights"><i class="light"></i><i class="light"></i><i class="light"></i></span></div>
+        <div class="line"><span class="dim">compute</span> ........ <span class="on">ONLINE</span></div>
+        <div class="line"><span class="dim">virtualization</span> .. <span class="on">PROXMOX</span></div>
+        <div class="line"><span class="dim">network</span> ........ <span class="on">ONLINE</span></div>
+        <div class="line"><span class="dim">identity</span> ....... <span class="on">ACTIVE</span></div>
+        <div class="line"><span class="dim">storage</span> ........ <span class="on">AVAILABLE</span></div>
+        <div style="margin-top:14px;color:#94a3b8">$ lab --keep-building</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="heading"><div><h2>Lab at a glance</h2></div><p>A high-level view of the systems and equipment that make up the environment.</p></div>
+    <div class="stats">
+      <div class="stat"><b>50U</b><span>Rack capacity</span></div>
+      <div class="stat"><b>10GbE</b><span>High-speed networking</span></div>
+      <div class="stat"><b>Proxmox</b><span>Virtualization platform</span></div>
+      <div class="stat"><b>AD / Entra</b><span>Identity infrastructure</span></div>
+    </div>
+  </section>
+
+  <section class="section" id="servers">
+    <div class="heading"><div><h2>Servers & Compute</h2></div><p>Physical systems used for virtualization, Windows Server, identity services, storage, and testing.</p></div>
+    <div class="grid">
+      <a class="card" href="#servers"><div class="icon">▣</div><h3>Cisco UCS C220 M4S</h3><p>2U rack server with dual Xeon E5-2690 v3 processors, 128 GB ECC memory, and 10Gb networking. Used for the Proxmox environment.</p><span class="arrow">View system →</span></a>
+      <a class="card" href="#servers"><div class="icon">▤</div><h3>Dell PowerEdge R540</h3><p>Dual Xeon Silver 4214R compute system with approximately 64 GB RAM and large-capacity storage.</p><span class="arrow">View system →</span></a>
+      <a class="card" href="#servers"><div class="icon">⌘</div><h3>Titan Systems</h3><p>Additional Supermicro-based compute nodes used for Windows Server, Active Directory, labs, and experimentation.</p><span class="arrow">View systems →</span></a>
+    </div>
+  </section>
+
+  <section class="section" id="network">
+    <div class="heading"><div><h2>Network</h2></div><p>The switching and connectivity layer tying the homelab together.</p></div>
+    <div class="grid">
+      <a class="card" href="#network"><div class="icon">⌁</div><h3>Dell X1052</h3><p>48-port 1GbE managed switch with SFP+ uplinks, providing the primary managed switching layer.</p><span class="arrow">View switch →</span></a>
+      <a class="card" href="#network"><div class="icon">◆</div><h3>Cisco Nexus 3064-X</h3><p>48-port 10Gb SFP+ switching platform with 40Gb capability, used for high-speed lab networking and experimentation.</p><span class="arrow">View switch →</span></a>
+      <a class="card" href="#network"><div class="icon">⌁</div><h3>Wi-Fi & Internet</h3><p>Wi-Fi 7 mesh networking with gigabit Internet connectivity across the home and homelab environment.</p><span class="arrow">View connectivity →</span></a>
+    </div>
+  </section>
+
+  <section class="section" id="platforms">
+    <div class="heading"><div><h2>Platforms & Services</h2></div><p>Software and services running throughout the environment.</p></div>
+    <div class="server"><div><h3>Proxmox Virtual Environment</h3><p>Virtualization platform used to host lab workloads and experiment with server infrastructure.</p></div><span class="badge">Virtualization</span></div>
+    <div class="server"><div><h3>Windows Server / Active Directory</h3><p>Domain services, Group Policy, identity management, and Windows Server administration labs.</p></div><span class="badge">Identity</span></div>
+    <div class="server"><div><h3>Entra ID & Hybrid Identity</h3><p>Hybrid identity experiments involving Entra ID, synchronization, authentication, MFA, and access controls.</p></div><span class="badge">Cloud Identity</span></div>
+  </section>
+
+  <section class="band">
+    <div><h2>More infrastructure is always being added.</h2><p>This page is designed to grow as the lab grows — new servers, switches, services, and projects can be added without changing the overall layout.</p></div>
+    <button class="btn secondary" id="theme">Toggle dark mode</button>
+  </section>
+</main>
+
+<footer>
+  <span>© 2026 CubeProton · Built by Aaron Draheim</span>
+  <span>Homelab infrastructure</span>
+</footer>
+
+<script>
+  const menu=document.getElementById("menu"), links=document.getElementById("links");
+  menu.addEventListener("click",()=>{const open=links.classList.toggle("open");menu.setAttribute("aria-expanded",open)});
+  document.querySelectorAll(".navbtn").forEach(b=>b.addEventListener("click",()=>{if(innerWidth<=850)b.parentElement.classList.toggle("open")}));
+  const theme=document.getElementById("theme");
+  function setTheme(d){document.body.classList.toggle("dark",d);localStorage.setItem("darkMode",d?"true":"false")}
+  setTheme(localStorage.getItem("darkMode")==="true");
+  theme.addEventListener("click",()=>setTheme(!document.body.classList.contains("dark")));
+</script>
+</body>
+</html>
