@@ -1,15 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- =========================================================
+       CUBEPROTON HOMELAB PAGE
+       ---------------------------------------------------------
+       EASY EDITING:
+       1. Change a card's href="..." to change where it goes.
+       2. Change the card title/description beside it.
+       3. Add/remove cards by copying one complete <a class="card"> block.
+       4. Sections are separated below so the page is easy to maintain.
+       ========================================================= -->
+
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="ProtonCube — technology, homelab infrastructure, projects, and useful tools.">
-  <title>ProtonCube | Technology, Homelab & Projects</title>
+  <meta name="description" content="CubeProton Homelab — servers, networking, virtualization, storage, and infrastructure.">
+  <title>Homelab | CubeProton</title>
+
   <style>
+    /* =========================================================
+       1. GLOBAL THEME
+       Change these variables to change the whole site's look.
+       ========================================================= */
     :root {
       --bg: #f4f7fc;
       --bg-soft: #eaf0fb;
-      --surface: rgba(255,255,255,.88);
+      --surface: rgba(255,255,255,.90);
       --surface-solid: #ffffff;
       --text: #172033;
       --muted: #5d6b82;
@@ -18,11 +33,22 @@
       --border: #d9e2f2;
       --shadow: 0 24px 60px rgba(23,32,51,.12);
       --radius: 22px;
-      --header: rgba(255,255,255,.78);
+    }
+
+    body.dark {
+      --bg: #0b1120;
+      --bg-soft: #111a2d;
+      --surface: rgba(20,30,48,.92);
+      --surface-solid: #141e30;
+      --text: #f8fafc;
+      --muted: #b8c4d8;
+      --primary: #7aa2ff;
+      --primary-dark: #9bb9ff;
+      --border: #2d3b54;
+      --shadow: 0 24px 60px rgba(0,0,0,.35);
     }
 
     * { box-sizing: border-box; }
-
     html { scroll-behavior: smooth; }
 
     body {
@@ -32,50 +58,37 @@
       background:
         radial-gradient(circle at 10% 0%, #dbe8ff 0, transparent 32%),
         radial-gradient(circle at 90% 10%, #e7ddff 0, transparent 28%),
-        linear-gradient(135deg, #f8faff 0%, var(--bg) 100%);
+        linear-gradient(135deg, #f8faff, var(--bg));
       min-height: 100vh;
-    }
-
-    body.dark {
-      --bg: #0b1120;
-      --bg-soft: #111a2d;
-      --surface: rgba(20,30,48,.9);
-      --surface-solid: #141e30;
-      --text: #f8fafc;
-      --muted: #b8c4d8;
-      --primary: #7aa2ff;
-      --primary-dark: #9bb9ff;
-      --border: #2d3b54;
-      --shadow: 0 24px 60px rgba(0,0,0,.35);
-      --header: rgba(11,17,32,.82);
     }
 
     a { color: inherit; }
 
+    /* =========================================================
+       2. NAVIGATION
+       ========================================================= */
     .site-header {
       position: sticky;
       top: 0;
       z-index: 20;
+      background: var(--surface);
       backdrop-filter: blur(18px);
-      background: var(--header);
       border-bottom: 1px solid var(--border);
     }
 
     .nav {
       width: min(1160px, 92vw);
-      margin: 0 auto;
+      margin: auto;
       min-height: 72px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 20px;
     }
 
     .brand {
       text-decoration: none;
       font-size: 21px;
       font-weight: 900;
-      letter-spacing: -.5px;
     }
 
     .brand span { color: var(--primary); }
@@ -86,12 +99,8 @@
       gap: 6px;
     }
 
-    .nav-item {
-      position: relative;
-    }
-
-    .nav-link, .nav-button {
-      appearance: none;
+    .nav-link,
+    .nav-button {
       border: 0;
       background: transparent;
       color: var(--text);
@@ -104,9 +113,12 @@
       cursor: pointer;
     }
 
-    .nav-link:hover, .nav-button:hover {
+    .nav-link:hover,
+    .nav-button:hover {
       background: var(--bg-soft);
     }
+
+    .nav-item { position: relative; }
 
     .dropdown {
       position: absolute;
@@ -139,17 +151,8 @@
     }
 
     .dropdown a:hover { background: var(--bg-soft); }
-
-    .dropdown strong {
-      display: block;
-      font-size: 14px;
-      margin-bottom: 3px;
-    }
-
-    .dropdown small {
-      color: var(--muted);
-      font-size: 12px;
-    }
+    .dropdown strong { display: block; }
+    .dropdown small { color: var(--muted); font-size: 12px; }
 
     .menu-toggle {
       display: none;
@@ -161,10 +164,13 @@
       cursor: pointer;
     }
 
+    /* =========================================================
+       3. PAGE / HERO
+       ========================================================= */
     main {
       width: min(1160px, 92vw);
-      margin: 0 auto;
-      padding: 76px 0 40px;
+      margin: auto;
+      padding: 64px 0 20px;
     }
 
     .hero {
@@ -172,7 +178,7 @@
       grid-template-columns: 1.12fr .88fr;
       gap: 42px;
       align-items: center;
-      min-height: 520px;
+      min-height: 470px;
     }
 
     .eyebrow {
@@ -187,20 +193,19 @@
     }
 
     h1 {
-      font-size: clamp(46px, 7vw, 78px);
+      font-size: clamp(46px, 7vw, 76px);
       line-height: .96;
       letter-spacing: -3px;
-      margin: 20px 0 20px;
-      max-width: 800px;
+      margin: 20px 0;
     }
 
     h1 span { color: var(--primary); }
 
     .lead {
-      max-width: 700px;
       color: var(--muted);
       font-size: 19px;
       line-height: 1.7;
+      max-width: 700px;
       margin: 0;
     }
 
@@ -208,45 +213,39 @@
       display: flex;
       flex-wrap: wrap;
       gap: 12px;
-      margin-top: 28px;
+      margin-top: 27px;
     }
 
     .btn {
-      border: 0;
-      border-radius: 13px;
-      padding: 14px 18px;
-      font-weight: 850;
-      font-size: 14px;
-      cursor: pointer;
-      text-decoration: none;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      transition: transform .15s ease, background .15s ease;
+      padding: 13px 17px;
+      border-radius: 13px;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 850;
+      cursor: pointer;
+      border: 1px solid var(--border);
     }
-
-    .btn:hover { transform: translateY(-1px); }
 
     .btn-primary {
       background: var(--primary);
       color: #fff;
+      border-color: var(--primary);
     }
-
-    .btn-primary:hover { background: var(--primary-dark); }
 
     .btn-secondary {
       background: var(--surface);
       color: var(--text);
-      border: 1px solid var(--border);
     }
 
     .hero-card {
-      padding: 26px;
+      padding: 25px;
       border: 1px solid var(--border);
       border-radius: 28px;
       background: var(--surface);
       box-shadow: var(--shadow);
-      backdrop-filter: blur(18px);
     }
 
     .terminal {
@@ -254,7 +253,7 @@
       background: #101827;
       color: #dbeafe;
       padding: 20px;
-      overflow: hidden;
+      font: 13px/1.8 Consolas, "Courier New", monospace;
     }
 
     .terminal-top {
@@ -270,17 +269,15 @@
       background: #64748b;
     }
 
-    .terminal pre {
-      margin: 0;
-      white-space: pre-wrap;
-      font: 13px/1.8 Consolas, "Courier New", monospace;
-    }
+    .accent { color: #8ab4ff; }
+    .dim { color: #94a3b8; }
 
-    .terminal .accent { color: #8ab4ff; }
-    .terminal .dim { color: #94a3b8; }
-
+    /* =========================================================
+       4. SECTION HEADERS
+       ========================================================= */
     .section {
-      padding: 72px 0 10px;
+      padding-top: 70px;
+      scroll-margin-top: 90px;
     }
 
     .section-heading {
@@ -300,10 +297,22 @@
     .section-heading p {
       margin: 0;
       color: var(--muted);
-      max-width: 620px;
+      max-width: 650px;
       line-height: 1.6;
     }
 
+    /* =========================================================
+       5. CARDS
+       ---------------------------------------------------------
+       IMPORTANT:
+       Every card below is an <a>.
+       To redirect a card, ONLY change its href.
+
+       Example:
+       href="server-c220.html"
+       href="https://example.com"
+       href="#some-section"
+       ========================================================= */
     .grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -349,7 +358,7 @@
       font-size: 14px;
     }
 
-    .card .arrow {
+    .arrow {
       display: inline-block;
       margin-top: 18px;
       color: var(--primary);
@@ -357,21 +366,49 @@
       font-size: 14px;
     }
 
-    .feature-band {
-      margin-top: 72px;
-      padding: 30px;
-      border: 1px solid var(--border);
-      border-radius: 24px;
-      background: var(--surface);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 24px;
+    /* =========================================================
+       6. SMALL STATUS / SERVER ROWS
+       ========================================================= */
+    .server-list {
+      display: grid;
+      gap: 14px;
     }
 
-    .feature-band h2 { margin: 0 0 7px; }
-    .feature-band p { margin: 0; color: var(--muted); line-height: 1.6; }
+    .server-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 18px;
+      align-items: center;
+      padding: 20px 22px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: var(--surface);
+    }
 
+    .server-row h3 {
+      margin: 0 0 6px;
+      font-size: 18px;
+    }
+
+    .server-row p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .badge {
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: var(--bg-soft);
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    /* =========================================================
+       7. FOOTER
+       ========================================================= */
     footer {
       width: min(1160px, 92vw);
       margin: 65px auto 0;
@@ -384,6 +421,9 @@
       font-size: 13px;
     }
 
+    /* =========================================================
+       8. MOBILE
+       ========================================================= */
     @media (max-width: 850px) {
       .nav-links {
         display: none;
@@ -403,6 +443,7 @@
       .nav-links.open { display: flex; }
       .nav-item { width: 100%; }
       .nav-link, .nav-button { width: 100%; text-align: left; }
+
       .dropdown {
         position: static;
         display: none;
@@ -421,25 +462,42 @@
       main { padding-top: 45px; }
       .hero { grid-template-columns: 1fr; min-height: 0; }
       .grid { grid-template-columns: 1fr; }
-      .section-heading, .feature-band, footer {
+
+      .section-heading,
+      footer {
         align-items: flex-start;
         flex-direction: column;
+      }
+
+      .server-row {
+        grid-template-columns: 1fr;
       }
     }
   </style>
 </head>
+
 <body>
+
+  <!-- =========================================================
+       NAVIGATION
+       Change navigation destinations here.
+       ========================================================= -->
   <header class="site-header">
     <nav class="nav" aria-label="Main navigation">
-      <a class="brand" href="index.html">Proton<span>Cube</span></a>
+
+      <a class="brand" href="index.html">
+        Proton<span>Cube</span>
+      </a>
 
       <button class="menu-toggle" id="menuToggle" type="button" aria-expanded="false">
         Menu
       </button>
 
       <div class="nav-links" id="navLinks">
+
         <a class="nav-link" href="index.html">Home</a>
 
+        <!-- TOOLS MENU -->
         <div class="nav-item">
           <button class="nav-button" type="button">Tools ▾</button>
           <div class="dropdown">
@@ -454,227 +512,496 @@
           </div>
         </div>
 
+        <!-- HOMELAB MENU -->
         <div class="nav-item">
           <button class="nav-button" type="button">Homelab ▾</button>
           <div class="dropdown">
-            <a href="#homelab">
-              <strong>Infrastructure</strong>
-              <small>Servers, networking & systems</small>
+            <a href="homelab.html">
+              <strong>Overview</strong>
+              <small>Homelab home</small>
             </a>
-            <a href="#projects">
-              <strong>Projects</strong>
-              <small>Current and future builds</small>
+            <a href="#servers">
+              <strong>Servers</strong>
+              <small>Compute & virtualization</small>
+            </a>
+            <a href="#network">
+              <strong>Network</strong>
+              <small>Switching & connectivity</small>
             </a>
           </div>
         </div>
 
+        <!-- REMOTE ACCESS MENU -->
         <div class="nav-item">
           <button class="nav-button" type="button">Remote Access ▾</button>
           <div class="dropdown">
-            <a href="#remote">
+            <!-- CHANGE THESE href VALUES WHEN THE PORTAL EXISTS -->
+            <a href="rdp.html">
               <strong>RDP Access</strong>
-              <small>Remote access portal</small>
+              <small>Temporary remote access</small>
             </a>
-            <a href="#remote">
+            <a href="status.html">
               <strong>Access Status</strong>
-              <small>Check availability</small>
+              <small>Service status</small>
             </a>
           </div>
         </div>
 
-        <a class="nav-link" href="#about">About</a>
+        <a class="nav-link" href="index.html#about">About</a>
+
       </div>
     </nav>
   </header>
 
+
   <main>
-    <section class="hero" aria-labelledby="welcome">
+
+    <!-- =======================================================
+         HERO
+         ======================================================= -->
+    <section class="hero">
+
       <div>
-        <span class="eyebrow">Technology • Homelab • Projects</span>
-        <h1 id="welcome">Welcome to <span>ProtonCube.</span></h1>
+        <span class="eyebrow">CubeProton Homelab</span>
+
+        <h1>
+          Built, tested, and
+          <span>always evolving.</span>
+        </h1>
+
         <p class="lead">
-          A personal technology portal for useful tools, homelab infrastructure,
-          experiments, and projects built and maintained by Aaron Draheim.
+          A look inside the infrastructure powering CubeProton —
+          servers, networking, virtualization, storage, identity services,
+          and the experiments happening behind the scenes.
         </p>
 
         <div class="hero-actions">
-          <a class="btn btn-primary" href="#tools">Explore the site</a>
-          <a class="btn btn-secondary" href="#homelab">View the homelab</a>
+          <a class="btn btn-primary" href="#servers">Explore servers</a>
+          <a class="btn btn-secondary" href="#network">View network</a>
         </div>
       </div>
 
-      <div class="hero-card" aria-label="ProtonCube overview">
+      <div class="hero-card">
         <div class="terminal">
           <div class="terminal-top">
-            <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
           </div>
-          <pre><span class="dim">$</span> <span class="accent">ProtonCube</span> --status
 
-<span class="dim">site:</span>      online
-<span class="dim">tools:</span>     available
-<span class="dim">homelab:</span>   online
-<span class="dim">projects:</span>   active
-
-<span class="accent">Ready for the next project.</span></pre>
+          <span class="dim">$</span> <span class="accent">cubeproton</span> --status<br><br>
+          <span class="dim">compute:</span>        <span class="accent">ONLINE</span><br>
+          <span class="dim">virtualization:</span> <span class="accent">PROXMOX</span><br>
+          <span class="dim">network:</span>        <span class="accent">ONLINE</span><br>
+          <span class="dim">identity:</span>       <span class="accent">ACTIVE</span><br>
+          <span class="dim">storage:</span>        <span class="accent">AVAILABLE</span><br><br>
+          <span class="accent">Ready for the next project.</span>
         </div>
       </div>
+
     </section>
 
-    <section class="section" id="tools">
+
+    <!-- =======================================================
+         SECTION: SERVERS
+         -------------------------------------------------------
+         ADD A SERVER:
+         Copy a complete card and change:
+           1. href
+           2. icon
+           3. title
+           4. description
+         ======================================================= -->
+    <section class="section" id="servers">
+
       <div class="section-heading">
         <div>
-          <h2>Tools</h2>
-          <p>Small utilities and experiments available from the site.</p>
+          <h2>Servers & Compute</h2>
+          <p>
+            Physical systems used for virtualization, Windows Server,
+            identity services, storage, and testing.
+          </p>
         </div>
       </div>
 
       <div class="grid">
-        <a class="card" href="clockout.html">
-          <div class="icon">⏱</div>
-          <h3>Clock-Out Calculator</h3>
-          <p>Calculate your target clock-out time from your start time, lunch, and workday length.</p>
-          <span class="arrow">Open calculator →</span>
-        </a>
 
-        <a class="card" href="solitaire.html">
-          <div class="icon">♠</div>
-          <h3>Solitaire</h3>
-          <p>A simple browser-based card game for when you need a quick break.</p>
-          <span class="arrow">Play solitaire →</span>
-        </a>
-
-        <a class="card" href="#tools">
-          <div class="icon">＋</div>
-          <h3>More Tools</h3>
-          <p>Future utilities and experiments can live here as the site grows.</p>
-          <span class="arrow">Coming soon →</span>
-        </a>
-      </div>
-    </section>
-
-    <section class="section" id="homelab">
-      <div class="section-heading">
-        <div>
-          <h2>Homelab</h2>
-          <p>Infrastructure, networking, servers, virtualization, and the systems behind the projects.</p>
-        </div>
-      </div>
-
-      <div class="grid">
-        <a class="card" href="#homelab">
+        <!-- CARD: CISCO UCS -->
+        <!-- CHANGE href="server-c220.html" TO YOUR ACTUAL PAGE -->
+        <a class="card" href="server-c220.html">
           <div class="icon">▣</div>
-          <h3>Infrastructure</h3>
-          <p>Explore the servers, virtualization environment, storage, and supporting systems.</p>
-          <span class="arrow">Explore infrastructure →</span>
+          <h3>Cisco UCS C220 M4S</h3>
+          <p>
+            2U rack server with dual Xeon E5-2690 v3 processors,
+            128 GB ECC memory, and 10Gb networking. Proxmox host.
+          </p>
+          <span class="arrow">View server →</span>
         </a>
 
-        <a class="card" href="#homelab">
+        <!-- CARD: DELL R540 -->
+        <a class="card" href="server-r540.html">
+          <div class="icon">▤</div>
+          <h3>Dell PowerEdge R540</h3>
+          <p>
+            Dual Xeon Silver 4214R compute system with approximately
+            64 GB RAM and large-capacity storage.
+          </p>
+          <span class="arrow">View server →</span>
+        </a>
+
+        <!-- CARD: TITAN -->
+        <a class="card" href="server-titan.html">
           <div class="icon">⌘</div>
-          <h3>Networking</h3>
-          <p>Switching, routing, segmentation, services, and the network that connects it all.</p>
+          <h3>Titan Systems</h3>
+          <p>
+            Additional Supermicro compute nodes used for Windows Server,
+            Active Directory, labs, and experimentation.
+          </p>
+          <span class="arrow">View systems →</span>
+        </a>
+
+        <!--
+          ADD ANOTHER SERVER HERE
+
+          <a class="card" href="server-new.html">
+            <div class="icon">▣</div>
+            <h3>New Server</h3>
+            <p>Short description of the server.</p>
+            <span class="arrow">View server →</span>
+          </a>
+        -->
+
+      </div>
+    </section>
+
+
+    <!-- =======================================================
+         SECTION: NETWORK
+         Current equipment only.
+         The sold Cisco Nexus is intentionally NOT listed.
+         ======================================================= -->
+    <section class="section" id="network">
+
+      <div class="section-heading">
+        <div>
+          <h2>Network</h2>
+          <p>
+            Switching and connectivity tying the homelab together.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid">
+
+        <!-- CARD: DELL X1052 -->
+        <a class="card" href="network-x1052.html">
+          <div class="icon">⌁</div>
+          <h3>Dell X1052</h3>
+          <p>
+            48-port 1GbE managed switch with SFP+ uplinks,
+            providing the primary managed switching layer.
+          </p>
+          <span class="arrow">View switch →</span>
+        </a>
+
+        <!-- CARD: WIFI / INTERNET -->
+        <a class="card" href="network.html">
+          <div class="icon">◉</div>
+          <h3>Wi-Fi & Internet</h3>
+          <p>
+            Wi-Fi 7 mesh networking with gigabit Internet connectivity
+            across the home and homelab.
+          </p>
           <span class="arrow">View network →</span>
         </a>
 
-        <a class="card" href="#projects">
-          <div class="icon">⚙</div>
-          <h3>Systems & Labs</h3>
-          <p>Experiments involving Windows Server, identity, Proxmox, and other technologies.</p>
-          <span class="arrow">View projects →</span>
-        </a>
+        <!--
+          ADD NETWORK EQUIPMENT HERE
+
+          <a class="card" href="network-new.html">
+            <div class="icon">⌁</div>
+            <h3>New Network Device</h3>
+            <p>Description of the device.</p>
+            <span class="arrow">View device →</span>
+          </a>
+        -->
+
       </div>
     </section>
 
+
+    <!-- =======================================================
+         SECTION: STORAGE
+         ======================================================= -->
+    <section class="section" id="storage">
+
+      <div class="section-heading">
+        <div>
+          <h2>Storage</h2>
+          <p>
+            Storage used throughout the lab for operating systems,
+            virtual machines, games, backups, and bulk data.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid">
+
+        <a class="card" href="storage.html">
+          <div class="icon">▤</div>
+          <h3>Server Storage</h3>
+          <p>
+            HDD and SSD storage used by the physical servers and
+            virtualization environment.
+          </p>
+          <span class="arrow">View storage →</span>
+        </a>
+
+        <a class="card" href="storage-proxmox.html">
+          <div class="icon">◈</div>
+          <h3>Proxmox Storage</h3>
+          <p>
+            Local storage and VM storage associated with the Proxmox
+            environment.
+          </p>
+          <span class="arrow">View Proxmox storage →</span>
+        </a>
+
+        <!--
+          ADD STORAGE HERE
+        -->
+      </div>
+    </section>
+
+
+    <!-- =======================================================
+         SECTION: PLATFORMS & SERVICES
+         ======================================================= -->
+    <section class="section" id="platforms">
+
+      <div class="section-heading">
+        <div>
+          <h2>Platforms & Services</h2>
+          <p>
+            Core software platforms running throughout the environment.
+          </p>
+        </div>
+      </div>
+
+      <div class="server-list">
+
+        <!-- ROW: PROXMOX -->
+        <div class="server-row">
+          <div>
+            <h3>Proxmox Virtual Environment</h3>
+            <p>
+              Virtualization platform used to host lab workloads and
+              experiment with server infrastructure.
+            </p>
+          </div>
+          <span class="badge">Virtualization</span>
+        </div>
+
+        <!-- ROW: WINDOWS / AD -->
+        <div class="server-row">
+          <div>
+            <h3>Windows Server / Active Directory</h3>
+            <p>
+              Domain services, Group Policy, identity management,
+              and Windows Server administration labs.
+            </p>
+          </div>
+          <span class="badge">Identity</span>
+        </div>
+
+        <!-- ROW: ENTRA -->
+        <div class="server-row">
+          <div>
+            <h3>Entra ID & Hybrid Identity</h3>
+            <p>
+              Hybrid identity experiments involving Entra ID,
+              synchronization, authentication, MFA, and access controls.
+            </p>
+          </div>
+          <span class="badge">Cloud Identity</span>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- =======================================================
+         SECTION: REMOTE ACCESS
+         These links are placeholders until the access portal exists.
+         ======================================================= -->
     <section class="section" id="remote">
+
       <div class="section-heading">
         <div>
           <h2>Remote Access</h2>
-          <p>A dedicated area for controlled access to homelab services. Access controls can be added here later.</p>
+          <p>
+            Controlled access to homelab services. These can later connect
+            to the temporary-IP whitelist system we discussed.
+          </p>
         </div>
       </div>
 
       <div class="grid">
-        <a class="card" href="#remote">
+
+        <!-- CHANGE href WHEN RDP PORTAL EXISTS -->
+        <a class="card" href="rdp.html">
           <div class="icon">↗</div>
           <h3>RDP Access</h3>
-          <p>Request temporary remote desktop access when the remote-access system is enabled.</p>
-          <span class="arrow">Access portal →</span>
+          <p>
+            Request temporary remote desktop access.
+          </p>
+          <span class="arrow">Open access portal →</span>
         </a>
 
-        <a class="card" href="#remote">
+        <!-- CHANGE href WHEN VPN PORTAL EXISTS -->
+        <a class="card" href="vpn.html">
           <div class="icon">⌁</div>
           <h3>VPN</h3>
-          <p>Secure remote connectivity to services inside the homelab.</p>
-          <span class="arrow">VPN portal →</span>
+          <p>
+            Secure remote connectivity into the homelab.
+          </p>
+          <span class="arrow">Open VPN portal →</span>
         </a>
 
-        <a class="card" href="#remote">
+        <!-- CHANGE href WHEN STATUS PAGE EXISTS -->
+        <a class="card" href="status.html">
           <div class="icon">●</div>
           <h3>Access Status</h3>
-          <p>Check whether remote services are available and review access status.</p>
+          <p>
+            View availability and status of remote services.
+          </p>
           <span class="arrow">Check status →</span>
         </a>
+
       </div>
     </section>
 
-    <section class="section" id="projects">
+
+    <!-- =======================================================
+         SECTION: NOTES FOR FUTURE YOU
+         This is intentionally visible so you don't have to
+         remember how the page was organized.
+         ======================================================= -->
+    <section class="section" id="notes">
+
       <div class="section-heading">
         <div>
-          <h2>Projects</h2>
-          <p>Things currently being built, tested, learned, or improved.</p>
+          <h2>Lab Notes</h2>
+          <p>
+            Quick reminders about how this page is organized.
+          </p>
         </div>
       </div>
 
-      <div class="grid">
-        <a class="card" href="#projects">
-          <div class="icon">▤</div>
-          <h3>Identity & Access</h3>
-          <p>Active Directory, Entra ID, authentication, access management, and identity labs.</p>
-          <span class="arrow">View project →</span>
-        </a>
+      <div class="server-list">
 
-        <a class="card" href="#projects">
-          <div class="icon">◈</div>
-          <h3>Virtualization</h3>
-          <p>Proxmox and server virtualization experiments across the homelab.</p>
-          <span class="arrow">View project →</span>
-        </a>
+        <div class="server-row">
+          <div>
+            <h3>Adding a new card</h3>
+            <p>
+              Copy an existing card. Change its <strong>href</strong>,
+              title, description, and icon. The CSS handles the layout automatically.
+            </p>
+          </div>
+          <span class="badge">Easy</span>
+        </div>
 
-        <a class="card" href="#projects">
-          <div class="icon">⚡</div>
-          <h3>Experiments</h3>
-          <p>Hardware, networking, automation, and whatever interesting problem comes next.</p>
-          <span class="arrow">View experiments →</span>
-        </a>
+        <div class="server-row">
+          <div>
+            <h3>Adding a new section</h3>
+            <p>
+              Copy one of the existing section blocks. Give it a unique
+              id such as <strong>backup</strong> or <strong>monitoring</strong>,
+              then add a navigation link if needed.
+            </p>
+          </div>
+          <span class="badge">Sections</span>
+        </div>
+
+        <div class="server-row">
+          <div>
+            <h3>Changing a redirect</h3>
+            <p>
+              Find the card and change only the text inside
+              <strong>href="..."</strong>. For another page on this site,
+              use something like <strong>server-c220.html</strong>.
+              For an external site, use the full HTTPS URL.
+            </p>
+          </div>
+          <span class="badge">Links</span>
+        </div>
+
+        <div class="server-row">
+          <div>
+            <h3>Equipment changes</h3>
+            <p>
+              When hardware is sold, remove its card from the current
+              equipment section rather than leaving it listed as active.
+            </p>
+          </div>
+          <span class="badge">Inventory</span>
+        </div>
+
       </div>
     </section>
 
-    <section class="feature-band" id="about">
-      <div>
-        <h2>Built for the lab. Built to evolve.</h2>
-        <p>
-          ProtonCube is a personal space for technology projects, practical tools,
-          and homelab infrastructure.
+
+    <!-- =======================================================
+         FINAL CALLOUT
+         ======================================================= -->
+    <section class="section">
+      <div class="hero-card">
+        <h2 style="margin-top:0;">Built for the lab. Built to grow.</h2>
+        <p class="lead" style="font-size:16px;">
+          This page is intentionally modular. As you add servers, network
+          equipment, storage, services, and projects, you can add a card
+          without rebuilding the rest of the page.
         </p>
+        <div class="hero-actions">
+          <button class="btn btn-secondary" id="themeToggle" type="button">
+            Toggle dark mode
+          </button>
+          <a class="btn btn-primary" href="index.html">
+            Back to home
+          </a>
+        </div>
       </div>
-      <button class="btn btn-secondary" id="themeToggle" type="button">Toggle dark mode</button>
     </section>
+
   </main>
 
+
+  <!-- =========================================================
+       FOOTER
+       ========================================================= -->
   <footer>
-    <span>© 2026 ProtonCube · Built by Aaron Draheim</span>
-    <span>Personal technology & homelab portal</span>
+    <span>© 2026 CubeProton · Built by Aaron Draheim</span>
+    <span>Homelab infrastructure</span>
   </footer>
 
+
+  <!-- =========================================================
+       JAVASCRIPT
+       Only handles mobile navigation and dark mode.
+       Card redirects are normal HTML links — no JS required.
+       ========================================================= -->
   <script>
     const menuToggle = document.getElementById("menuToggle");
     const navLinks = document.getElementById("navLinks");
     const themeToggle = document.getElementById("themeToggle");
 
+    // Mobile menu
     menuToggle.addEventListener("click", () => {
       const open = navLinks.classList.toggle("open");
       menuToggle.setAttribute("aria-expanded", open);
     });
 
+    // Mobile dropdown menus
     document.querySelectorAll(".nav-button").forEach(button => {
       button.addEventListener("click", () => {
         if (window.innerWidth <= 850) {
@@ -683,6 +1010,7 @@
       });
     });
 
+    // Dark mode preference
     function setTheme(dark) {
       document.body.classList.toggle("dark", dark);
       localStorage.setItem("darkMode", dark ? "true" : "false");
@@ -694,5 +1022,6 @@
       setTheme(!document.body.classList.contains("dark"));
     });
   </script>
+
 </body>
 </html>
